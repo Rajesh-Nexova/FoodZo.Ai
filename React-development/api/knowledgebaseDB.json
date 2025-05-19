@@ -1,0 +1,103 @@
+[
+    {
+
+        "title": "Any other legal pages I should know about?",
+        "text1": "Policies have wide acceptance editors",
+        "text2": "Guidelines best practices supported.",
+        "text2_badge" : "New",
+        "text3": "Editors should attempt to follow guidelines.",
+        "text4": "They are best treated with common sense.",
+        "text5": "See More (40)"
+    },
+    {
+
+        "title": "Does Moment API or automatic export?",
+        "text1": "Resource API content produced by business.",
+        "text1_badge" : "Review",
+        "text2": "API allows and download API Images.",
+        "text3": "API retrieve breaking news categories",
+        "text3_badge" : "Articles",
+        "text4": "API retrieves rules for a fantasy league.",
+        "text5": "See More (90)"
+    },
+    {
+
+        "title": "WordPress Site Maintenance",
+        "text1": "Make a backup of your WordPress website.",
+        "text2": "Run a security check.",
+        "text2_badge" : "Closed",
+        "text3": "Monitor your search engine optimization.",
+        "text4": "Set a regular maintenance schedule.",
+        "text5": "See More (50)"
+
+    },
+    {
+
+        "title": "Can I change my plan later?",
+        "text1": "You can easily change plans Wonderfull at any time.",
+        "text1_badge" : "Popular",
+        "text2": "you’ll be charged a prorated cover that upgrade.",
+        "text3": "But also the leap into electronic typesetting,",
+        "text4": "When an unknown printer took a galley",
+        "text5": "See More (90)"
+
+    },
+    {
+
+        "title": "How do I pay for the Premium Plan?",
+        "text1": "Premium plans are billed as a yearly payment.",
+        "text2": "Monthly plan are bill every month date of your signup.",
+        "text3": "You can set Monthly or Yearly for Premium plan.",
+        "text4": "When an unknown printer took a galley",
+        "text4_badge" : "Closed",
+        "text5": "See More (50)"
+
+    },
+    {
+
+        "title": "What is your Shopping Policy",
+        "text1": "Many new editors rely on policy interpretations.",
+        "text2": "Editor continually attempts to find a different policy.",
+        "text3": "Violation of maintaining a neutral point of view.",
+        "text3_badge" : "Article",
+        "text4": "You double check your sources.",
+        "text5": "See More (26)"
+
+    },
+    {
+
+        "title": "How can I change the component?",
+        "text1": "You can modify some specific component settings.",
+        "text1_badge" : "Review",
+        "text2": "Click Apply to validate the set preferences.",
+        "text3": "Following procedure applie to external components",
+        "text3_badge" : "Closed",
+        "text4": "To modify those specific components settings.",
+        "text5": "See More (10)"
+
+    },
+    {
+
+        "title": "How does it work?",
+        "text1": "To get started with your account.",
+        "text2" : "Editor continually attempts to find a different policy.",
+        "text2_badge" : "Popular",
+        "text3" : "Users can browse by topic or use the visually.",
+        "text3_badge" : "Review",
+        "text4" : "This works through various methods of site tracking",
+        "text5" : "See More (21)"
+
+    },
+    {
+
+        "title": "What is Lorem Ipsum?",
+        "text1": "Common language regular the existing languages.",
+        "text2": "Lorem Ipsum been industry's standard dummy",
+        "text3": "Language is not real even ‘Lorem’ does't exist.",
+        "text4": "dummy text that is not meant to mean anything.",
+        "text4_badge" : "On hold",
+        "text5": "See More (34)"
+
+    }
+
+]
