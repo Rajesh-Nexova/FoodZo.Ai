@@ -1,6 +1,7 @@
 -- ============================================================================
 -- Advanced User Management and Role-Based Access Control (RBAC) Database
 -- Compatible with MySQL, PostgreSQL, and SQL Server
+--- Made Modifications for SQL Server
 -- ============================================================================
 
 -- Drop existing tables if they exist (for fresh installation)
@@ -16,54 +17,58 @@ DROP TABLE IF EXISTS user_profiles;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS organizations;
 */
-
+CREATE Database FoodZOAI 
+GO
 -- ============================================================================
 -- 1. ORGANIZATIONS TABLE (Multi-tenant support)
 -- ============================================================================
 CREATE TABLE organizations (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id INT identity(1,1),
     name VARCHAR(255) NOT NULL,
-    slug VARCHAR(100) UNIQUE NOT NULL,
+    slug VARCHAR(100)   NOT NULL,
     description TEXT,
     website VARCHAR(255),
     logo_url VARCHAR(500),
-    subscription_plan ENUM('free', 'basic', 'premium', 'enterprise') DEFAULT 'free',
+    subscription_plan VARCHAR(50), --DEFAULT 'free',--ENUM('free', 'basic', 'premium', 'enterprise') 
     max_users INT DEFAULT 10,
-    status ENUM('active', 'suspended', 'inactive') DEFAULT 'active',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL
-);
+    status Varchar(50),--ENUM('active', 'suspended', 'inactive') DEFAULT 'active',
+    created_at DateTime DEFAULT GETDATE(),
+    updated_at DateTime DEFAULT GETDATE(),
+    deleted_at DateTime NULL,
+	CONSTRAINT PK_Organizations_ID PRIMARY KEY CLUSTERED (id)
+)
+GO
 
 -- ============================================================================
 -- 2. USERS TABLE (Core user information)
 -- ============================================================================
 CREATE TABLE users (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id INT  identity(1,1),
     organization_id INT,
-    username VARCHAR(50) UNIQUE NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    email_verified_at TIMESTAMP NULL,
+    username VARCHAR(50)   NOT NULL,
+    email VARCHAR(255)   NOT NULL,
+    email_verified_at DateTime NULL,
     password_hash VARCHAR(255) NOT NULL,
     salt VARCHAR(255),
     first_name VARCHAR(100),
     last_name VARCHAR(100),
     phone VARCHAR(20),
-    avatar_url VARCHAR(500),
-    status ENUM('active', 'pending', 'suspended', 'deactivated') DEFAULT 'pending',
-    last_login_at TIMESTAMP NULL,
-    password_changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    avatar_url VARCHAR(500), -- ENUM('active', 'pending', 'suspended', 'deactivated')
+    status VARCHAR(50) ,--  DEFAULT 'pending',
+    last_login_at DateTime NULL,
+    password_changed_at DateTime DEFAULT GETDATE(),
     failed_login_attempts INT DEFAULT 0,
-    locked_until TIMESTAMP NULL,
-    two_factor_enabled BOOLEAN DEFAULT FALSE,
+    locked_until DateTime NULL,
+    two_factor_enabled bit DEFAULT 0,
     two_factor_secret VARCHAR(255),
     created_by INT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL,
-    
-    FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE SET NULL,
-    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL,
+    created_at DateTime DEFAULT GETDATE(),
+    updated_at DateTime DEFAULT GETDATE(),
+    deleted_at DateTime NULL,
+
+   CONSTRAINT PK_users_ID PRIMARY KEY CLUSTERED (id),
+    FOREIGN KEY (organization_id) REFERENCES organizations(id) ,
+    FOREIGN KEY (created_by) REFERENCES users(id),
     INDEX idx_users_email (email),
     INDEX idx_users_username (username),
     INDEX idx_users_organization (organization_id),
@@ -74,11 +79,11 @@ CREATE TABLE users (
 -- 3. USER PROFILES TABLE (Extended user information)
 -- ============================================================================
 CREATE TABLE user_profiles (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT UNIQUE NOT NULL,
+    id INT identity(1,1),
+    user_id INT   NOT NULL,
     bio TEXT,
     date_of_birth DATE,
-    gender ENUM('male', 'female', 'other', 'prefer_not_to_say'),
+    gender varchar(5),--ENUM('male', 'female', 'other', 'prefer_not_to_say'),
     address TEXT,
     city VARCHAR(100),
     state_province VARCHAR(100),
@@ -86,32 +91,35 @@ CREATE TABLE user_profiles (
     country VARCHAR(100),
     timezone VARCHAR(50) DEFAULT 'UTC',
     language VARCHAR(10) DEFAULT 'en',
-    notification_preferences JSON,
-    privacy_settings JSON,
-    custom_fields JSON,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    notification_preferences nvarchar(max),
+    privacy_settings nvarchar(max),
+    custom_fields nvarchar(max),
+    created_at DateTime DEFAULT GETDATE(),
+    updated_at DateTime DEFAULT GETDATE() ,
     
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+	CONSTRAINT PK_User_Profiles_ID PRIMARY KEY CLUSTERED (id),
+    FOREIGN KEY (user_id) REFERENCES users(id) 
 );
 
 -- ============================================================================
 -- 4. ROLES TABLE (Role definitions)
 -- ============================================================================
 CREATE TABLE roles (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id INT identity(1,1),
     organization_id INT,
     name VARCHAR(100) NOT NULL,
-    slug VARCHAR(100) NOT NULL,
+    slug VARCHAR(100)   NOT NULL,
     description TEXT,
     level INT DEFAULT 0, -- Higher level = more privileges
-    is_system_role BOOLEAN DEFAULT FALSE, -- Cannot be deleted
+    is_system_role BIT DEFAULT 0, -- Cannot be deleted
     color VARCHAR(7), -- Hex color code for UI
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_at DateTime DEFAULT GETDATE(),
+    updated_at DateTime DEFAULT GETDATE(),
+	
+	
+    CONSTRAINT PK_Roles_ID PRIMARY KEY CLUSTERED (id),
+    FOREIGN KEY (organization_id) REFERENCES organizations(id),
     
-    FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE CASCADE,
-    UNIQUE KEY unique_role_org (organization_id, slug),
     INDEX idx_roles_organization (organization_id),
     INDEX idx_roles_level (level)
 );
@@ -120,17 +128,18 @@ CREATE TABLE roles (
 -- 5. PERMISSIONS TABLE (Permission definitions)
 -- ============================================================================
 CREATE TABLE permissions (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(100) UNIQUE NOT NULL,
-    slug VARCHAR(100) UNIQUE NOT NULL,
+    id INT  identity(1,1),
+    name VARCHAR(100)   NOT NULL,
+    slug VARCHAR(100)   NOT NULL,
     description TEXT,
     module VARCHAR(50), -- e.g., 'users', 'products', 'orders'
     action VARCHAR(50), -- e.g., 'create', 'read', 'update', 'delete'
     resource VARCHAR(50), -- e.g., 'user', 'product', 'order'
-    is_system_permission BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
+    is_system_permission bit DEFAULT 0,
+    created_at DateTime DEFAULT GETDATE(),
+    updated_at DateTime DEFAULT GETDATE(),
+
+    CONSTRAINT PK_PermissionsD PRIMARY KEY CLUSTERED (id),
     INDEX idx_permissions_module (module),
     INDEX idx_permissions_action (action),
     INDEX idx_permissions_resource (resource)
@@ -140,18 +149,18 @@ CREATE TABLE permissions (
 -- 6. USER_ROLES TABLE (Many-to-many: Users to Roles)
 -- ============================================================================
 CREATE TABLE user_roles (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id INT identity(1,1),
     user_id INT NOT NULL,
-    role_id INT NOT NULL,
+    role_id INT NOT NULL  ,
     assigned_by INT,
-    assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    expires_at TIMESTAMP NULL,
-    is_active BOOLEAN DEFAULT TRUE,
+    assigned_at DateTime DEFAULT GETDATE(),
+    expires_at DateTime NULL,
+    is_active bit DEFAULT 1,
     
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE,
-    FOREIGN KEY (assigned_by) REFERENCES users(id) ON DELETE SET NULL,
-    UNIQUE KEY unique_user_role (user_id, role_id),
+	CONSTRAINT PK_User_Roles_ID PRIMARY KEY CLUSTERED (id),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (role_id) REFERENCES roles(id),
+    FOREIGN KEY (assigned_by) REFERENCES users(id) ,
     INDEX idx_user_roles_user (user_id),
     INDEX idx_user_roles_role (role_id)
 );
@@ -160,17 +169,17 @@ CREATE TABLE user_roles (
 -- 7. ROLE_PERMISSIONS TABLE (Many-to-many: Roles to Permissions)
 -- ============================================================================
 CREATE TABLE role_permissions (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    role_id INT NOT NULL,
-    permission_id INT NOT NULL,
-    granted BOOLEAN DEFAULT TRUE, -- Allow for explicit deny
+    id INT identity(1,1),
+    role_id INT NOT NULL  ,
+    permission_id INT NOT NULL  ,
+    granted bit DEFAULT 1, -- Allow for explicit deny
     granted_by INT,
-    granted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    granted_at DateTime DEFAULT GETDATE(),
     
+	CONSTRAINT PK_Role_Permissions_ID PRIMARY KEY CLUSTERED (id),
     FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE,
     FOREIGN KEY (permission_id) REFERENCES permissions(id) ON DELETE CASCADE,
     FOREIGN KEY (granted_by) REFERENCES users(id) ON DELETE SET NULL,
-    UNIQUE KEY unique_role_permission (role_id, permission_id),
     INDEX idx_role_permissions_role (role_id),
     INDEX idx_role_permissions_permission (permission_id)
 );
@@ -179,18 +188,17 @@ CREATE TABLE role_permissions (
 -- 8. USER_PERMISSIONS TABLE (Direct user permissions)
 -- ============================================================================
 CREATE TABLE user_permissions (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    permission_id INT NOT NULL,
-    granted BOOLEAN DEFAULT TRUE, -- Allow for explicit deny
+    id INT identity(1,1),
+    user_id INT NOT NULL  ,
+    permission_id INT NOT NULL  ,
+    granted BIT DEFAULT 1, -- Allow for explicit deny
     granted_by INT,
-    granted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    expires_at TIMESTAMP NULL,
-    
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (permission_id) REFERENCES permissions(id) ON DELETE CASCADE,
-    FOREIGN KEY (granted_by) REFERENCES users(id) ON DELETE SET NULL,
-    UNIQUE KEY unique_user_permission (user_id, permission_id),
+    granted_at DateTime DEFAULT GETDATE(),
+    expires_at DateTime NULL,
+	CONSTRAINT PK_User_Permissions_ID PRIMARY KEY CLUSTERED (id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ,
+    FOREIGN KEY (permission_id) REFERENCES permissions(id) ,
+    FOREIGN KEY (granted_by) REFERENCES users(id),  
     INDEX idx_user_permissions_user (user_id),
     INDEX idx_user_permissions_permission (permission_id)
 );
@@ -199,20 +207,20 @@ CREATE TABLE user_permissions (
 -- 9. USER_SESSIONS TABLE (Session management)
 -- ============================================================================
 CREATE TABLE user_sessions (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id INT identity(1,1),
     user_id INT NOT NULL,
-    session_token VARCHAR(255) UNIQUE NOT NULL,
-    refresh_token VARCHAR(255) UNIQUE,
+    session_token VARCHAR(255)   NOT NULL,
+    refresh_token VARCHAR(255)  ,
     ip_address VARCHAR(45),
     user_agent TEXT,
-    device_info JSON,
-    location JSON,
-    is_active BOOLEAN DEFAULT TRUE,
-    expires_at TIMESTAMP NOT NULL,
-    last_activity_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    device_info varchar(Max), -- JSON
+    location varchar(Max), -- JSON,
+    is_active BIT DEFAULT 1,
+    expires_at DateTime NOT NULL,
+    last_activity_at DateTime DEFAULT GETDATE(),
+    created_at DateTime DEFAULT GETDATE(),
+    CONSTRAINT PK_user_sessions_ID PRIMARY KEY CLUSTERED (id),
+    FOREIGN KEY (user_id) REFERENCES users(id),
     INDEX idx_sessions_user (user_id),
     INDEX idx_sessions_token (session_token),
     INDEX idx_sessions_active (is_active),
@@ -229,52 +237,52 @@ VALUES ('Default Organization', 'default', 'Default organization for the applica
 
 -- Insert system roles
 INSERT INTO roles (organization_id, name, slug, description, level, is_system_role, color) VALUES
-(1, 'Super Administrator', 'super_admin', 'Full system access', 100, TRUE, '#FF0000'),
-(1, 'Administrator', 'admin', 'Administrative access', 90, TRUE, '#FF6600'),
-(1, 'Manager', 'manager', 'Management level access', 70, TRUE, '#0066FF'),
-(1, 'Editor', 'editor', 'Content editing access', 50, TRUE, '#009900'),
-(1, 'User', 'user', 'Basic user access', 10, TRUE, '#666666'),
-(1, 'Guest', 'guest', 'Read-only access', 0, TRUE, '#CCCCCC');
+(1, 'Super Administrator', 'super_admin', 'Full system access', 100, 1, '#FF0000'),
+(1, 'Administrator', 'admin', 'Administrative access', 90, 1, '#FF6600'),
+(1, 'Manager', 'manager', 'Management level access', 70, 1, '#0066FF'),
+(1, 'Editor', 'editor', 'Content editing access', 50, 1, '#009900'),
+(1, 'User', 'user', 'Basic user access', 10, 1, '#666666'),
+(1, 'Guest', 'guest', 'Read-only access', 0, 1, '#CCCCCC');
 
 -- Insert system permissions
 INSERT INTO permissions (name, slug, description, module, action, resource, is_system_permission) VALUES
 -- User management permissions
-('Create Users', 'create_users', 'Can create new users', 'users', 'create', 'user', TRUE),
-('Read Users', 'read_users', 'Can view user information', 'users', 'read', 'user', TRUE),
-('Update Users', 'update_users', 'Can modify user information', 'users', 'update', 'user', TRUE),
-('Delete Users', 'delete_users', 'Can delete users', 'users', 'delete', 'user', TRUE),
-('Manage User Roles', 'manage_user_roles', 'Can assign/remove user roles', 'users', 'manage', 'roles', TRUE),
+('Create Users', 'create_users', 'Can create new users', 'users', 'create', 'user', 1),
+('Read Users', 'read_users', 'Can view user information', 'users', 'read', 'user', 1),
+('Update Users', 'update_users', 'Can modify user information', 'users', 'update', 'user', 1),
+('Delete Users', 'delete_users', 'Can delete users', 'users', 'delete', 'user', 1),
+('Manage User Roles', 'manage_user_roles', 'Can assign/remove user roles', 'users', 'manage', 'roles', 1),
 
 -- Role management permissions
-('Create Roles', 'create_roles', 'Can create new roles', 'roles', 'create', 'role', TRUE),
-('Read Roles', 'read_roles', 'Can view role information', 'roles', 'read', 'role', TRUE),
-('Update Roles', 'update_roles', 'Can modify role information', 'roles', 'update', 'role', TRUE),
-('Delete Roles', 'delete_roles', 'Can delete roles', 'roles', 'delete', 'role', TRUE),
-('Manage Role Permissions', 'manage_role_permissions', 'Can assign/remove role permissions', 'roles', 'manage', 'permissions', TRUE),
+('Create Roles', 'create_roles', 'Can create new roles', 'roles', 'create', 'role', 1),
+('Read Roles', 'read_roles', 'Can view role information', 'roles', 'read', 'role', 1),
+('Update Roles', 'update_roles', 'Can modify role information', 'roles', 'update', 'role', 1),
+('Delete Roles', 'delete_roles', 'Can delete roles', 'roles', 'delete', 'role', 1),
+('Manage Role Permissions', 'manage_role_permissions', 'Can assign/remove role permissions', 'roles', 'manage', 'permissions', 1),
 
 -- Permission management permissions
-('Create Permissions', 'create_permissions', 'Can create new permissions', 'permissions', 'create', 'permission', TRUE),
-('Read Permissions', 'read_permissions', 'Can view permission information', 'permissions', 'read', 'permission', TRUE),
-('Update Permissions', 'update_permissions', 'Can modify permission information', 'permissions', 'update', 'permission', TRUE),
-('Delete Permissions', 'delete_permissions', 'Can delete permissions', 'permissions', 'delete', 'permission', TRUE),
+('Create Permissions', 'create_permissions', 'Can create new permissions', 'permissions', 'create', 'permission', 1),
+('Read Permissions', 'read_permissions', 'Can view permission information', 'permissions', 'read', 'permission', 1),
+('Update Permissions', 'update_permissions', 'Can modify permission information', 'permissions', 'update', 'permission', 1),
+('Delete Permissions', 'delete_permissions', 'Can delete permissions', 'permissions', 'delete', 'permission', 1),
 
 -- Organization management permissions
-('Create Organizations', 'create_organizations', 'Can create new organizations', 'organizations', 'create', 'organization', TRUE),
-('Read Organizations', 'read_organizations', 'Can view organization information', 'organizations', 'read', 'organization', TRUE),
-('Update Organizations', 'update_organizations', 'Can modify organization information', 'organizations', 'update', 'organization', TRUE),
-('Delete Organizations', 'delete_organizations', 'Can delete organizations', 'organizations', 'delete', 'organization', TRUE),
+('Create Organizations', 'create_organizations', 'Can create new organizations', 'organizations', 'create', 'organization', 1),
+('Read Organizations', 'read_organizations', 'Can view organization information', 'organizations', 'read', 'organization', 1),
+('Update Organizations', 'update_organizations', 'Can modify organization information', 'organizations', 'update', 'organization', 1),
+('Delete Organizations', 'delete_organizations', 'Can delete organizations', 'organizations', 'delete', 'organization', 1),
 
 -- Session management permissions
-('Manage Sessions', 'manage_sessions', 'Can manage user sessions', 'sessions', 'manage', 'session', TRUE),
-('View System Logs', 'view_system_logs', 'Can view system activity logs', 'system', 'read', 'logs', TRUE),
+('Manage Sessions', 'manage_sessions', 'Can manage user sessions', 'sessions', 'manage', 'session', 1),
+('View System Logs', 'view_system_logs', 'Can view system activity logs', 'system', 'read', 'logs', 1),
 
 -- Profile management permissions
-('Update Own Profile', 'update_own_profile', 'Can update own profile', 'profile', 'update', 'own', TRUE),
-('View Own Profile', 'view_own_profile', 'Can view own profile', 'profile', 'read', 'own', TRUE);
+('Update Own Profile', 'update_own_profile', 'Can update own profile', 'profile', 'update', 'own', 1),
+('View Own Profile', 'view_own_profile', 'Can view own profile', 'profile', 'read', 'own', 1);
 
 -- Assign permissions to super admin role
 INSERT INTO role_permissions (role_id, permission_id, granted_by)
-SELECT 1, id, NULL FROM permissions WHERE is_system_permission = TRUE;
+SELECT 1, id, NULL FROM permissions WHERE is_system_permission = 1;
 
 -- Assign specific permissions to admin role
 INSERT INTO role_permissions (role_id, permission_id, granted_by)
@@ -304,170 +312,170 @@ INSERT INTO role_permissions (role_id, permission_id, granted_by)
 SELECT 6, id, NULL FROM permissions 
 WHERE slug IN ('view_own_profile');
 
--- ============================================================================
--- 11. USEFUL VIEWS
--- ============================================================================
+---- ============================================================================
+---- 11. USEFUL VIEWS
+---- ============================================================================
 
--- View: User roles and permissions
-CREATE VIEW user_effective_permissions AS
-SELECT DISTINCT
-    u.id as user_id,
-    u.username,
-    u.email,
-    p.id as permission_id,
-    p.slug as permission_slug,
-    p.name as permission_name,
-    'role' as source_type,
-    r.name as source_name
-FROM users u
-JOIN user_roles ur ON u.id = ur.user_id AND ur.is_active = TRUE
-JOIN role_permissions rp ON ur.role_id = rp.role_id AND rp.granted = TRUE
-JOIN permissions p ON rp.permission_id = p.id
-JOIN roles r ON ur.role_id = r.id
-WHERE u.deleted_at IS NULL
-UNION
-SELECT DISTINCT
-    u.id as user_id,
-    u.username,
-    u.email,
-    p.id as permission_id,
-    p.slug as permission_slug,
-    p.name as permission_name,
-    'direct' as source_type,
-    'Direct Assignment' as source_name
-FROM users u
-JOIN user_permissions up ON u.id = up.user_id AND up.granted = TRUE
-JOIN permissions p ON up.permission_id = p.id
-WHERE u.deleted_at IS NULL;
+---- View: User roles and permissions
+--CREATE VIEW user_effective_permissions AS
+--SELECT DISTINCT
+--    u.id as user_id,
+--    u.username,
+--    u.email,
+--    p.id as permission_id,
+--    p.slug as permission_slug,
+--    p.name as permission_name,
+--    'role' as source_type,
+--    r.name as source_name
+--FROM users u
+--JOIN user_roles ur ON u.id = ur.user_id AND ur.is_active = 1
+--JOIN role_permissions rp ON ur.role_id = rp.role_id AND rp.granted = 1
+--JOIN permissions p ON rp.permission_id = p.id
+--JOIN roles r ON ur.role_id = r.id
+--WHERE u.deleted_at IS NULL
+--UNION
+--SELECT DISTINCT
+--    u.id as user_id,
+--    u.username,
+--    u.email,
+--    p.id as permission_id,
+--    p.slug as permission_slug,
+--    p.name as permission_name,
+--    'direct' as source_type,
+--    'Direct Assignment' as source_name
+--FROM users u
+--JOIN user_permissions up ON u.id = up.user_id AND up.granted = 1
+--JOIN permissions p ON up.permission_id = p.id
+--WHERE u.deleted_at IS NULL;
 
--- View: User summary
-CREATE VIEW user_summary AS
-SELECT 
-    u.id,
-    u.username,
-    u.email,
-    u.first_name,
-    u.last_name,
-    u.status,
-    u.last_login_at,
-    o.name as organization_name,
-    GROUP_CONCAT(r.name ORDER BY r.level DESC) as roles,
-    COUNT(DISTINCT ur.role_id) as role_count,
-    u.created_at
-FROM users u
-LEFT JOIN organizations o ON u.organization_id = o.id
-LEFT JOIN user_roles ur ON u.id = ur.user_id AND ur.is_active = TRUE
-LEFT JOIN roles r ON ur.role_id = r.id
-WHERE u.deleted_at IS NULL
-GROUP BY u.id, u.username, u.email, u.first_name, u.last_name, u.status, u.last_login_at, o.name, u.created_at;
+---- View: User summary
+--CREATE VIEW user_summary AS
+--SELECT 
+--    u.id,
+--    u.username,
+--    u.email,
+--    u.first_name,
+--    u.last_name,
+--    u.status,
+--    u.last_login_at,
+--    o.name as organization_name,
+--    GROUP_CONCAT(r.name ORDER BY r.level DESC) as roles,
+--    COUNT(DISTINCT ur.role_id) as role_count,
+--    u.created_at
+--FROM users u
+--LEFT JOIN organizations o ON u.organization_id = o.id
+--LEFT JOIN user_roles ur ON u.id = ur.user_id AND ur.is_active = 1
+--LEFT JOIN roles r ON ur.role_id = r.id
+--WHERE u.deleted_at IS NULL
+--GROUP BY u.id, u.username, u.email, u.first_name, u.last_name, u.status, u.last_login_at, o.name, u.created_at;
 
 -- ============================================================================
 -- 12. USEFUL STORED PROCEDURES
 -- ============================================================================
 
-DELIMITER //
 
--- Procedure: Check if user has permission
-CREATE PROCEDURE CheckUserPermission(
-    IN p_user_id INT,
-    IN p_permission_slug VARCHAR(100),
-    OUT p_has_permission BOOLEAN
-)
-BEGIN
-    DECLARE permission_count INT DEFAULT 0;
-    
-    SELECT COUNT(*) INTO permission_count
-    FROM user_effective_permissions
-    WHERE user_id = p_user_id AND permission_slug = p_permission_slug;
-    
-    SET p_has_permission = (permission_count > 0);
-END //
 
--- Procedure: Get user permissions
-CREATE PROCEDURE GetUserPermissions(
-    IN p_user_id INT
-)
-BEGIN
-    SELECT DISTINCT
-        permission_slug,
-        permission_name,
-        source_type,
-        source_name
-    FROM user_effective_permissions
-    WHERE user_id = p_user_id
-    ORDER BY permission_name;
-END //
+---- Procedure: Check if user has permission
+--CREATE PROCEDURE CheckUserPermission(
+--    IN p_user_id INT,
+--    IN p_permission_slug VARCHAR(100),
+--    OUT p_has_permission BOOLEAN
+--)
+--BEGIN
+--    DECLARE permission_count INT DEFAULT 0;
+    
+--    SELECT COUNT(*) INTO permission_count
+--    FROM user_effective_permissions
+--    WHERE user_id = p_user_id AND permission_slug = p_permission_slug;
+    
+--    SET p_has_permission = (permission_count > 0);
+--END //
 
--- Procedure: Assign role to user
-CREATE PROCEDURE AssignRoleToUser(
-    IN p_user_id INT,
-    IN p_role_id INT,
-    IN p_assigned_by INT,
-    IN p_expires_at TIMESTAMP
-)
-BEGIN
-    DECLARE EXIT HANDLER FOR SQLEXCEPTION
-    BEGIN
-        ROLLBACK;
-        RESIGNAL;
-    END;
-    
-    START TRANSACTION;
-    
-    INSERT INTO user_roles (user_id, role_id, assigned_by, expires_at)
-    VALUES (p_user_id, p_role_id, p_assigned_by, p_expires_at)
-    ON DUPLICATE KEY UPDATE
-        assigned_by = p_assigned_by,
-        assigned_at = CURRENT_TIMESTAMP,
-        expires_at = p_expires_at,
-        is_active = TRUE;
-    
-    COMMIT;
-END //
+---- Procedure: Get user permissions
+--CREATE PROCEDURE GetUserPermissions(
+--    IN p_user_id INT
+--)
+--BEGIN
+--    SELECT DISTINCT
+--        permission_slug,
+--        permission_name,
+--        source_type,
+--        source_name
+--    FROM user_effective_permissions
+--    WHERE user_id = p_user_id
+--    ORDER BY permission_name;
+--END //
 
--- Procedure: Create user with default role
-CREATE PROCEDURE CreateUserWithRole(
-    IN p_organization_id INT,
-    IN p_username VARCHAR(50),
-    IN p_email VARCHAR(255),
-    IN p_password_hash VARCHAR(255),
-    IN p_first_name VARCHAR(100),
-    IN p_last_name VARCHAR(100),
-    IN p_role_slug VARCHAR(100),
-    IN p_created_by INT,
-    OUT p_user_id INT
-)
-BEGIN
-    DECLARE role_id INT;
-    DECLARE EXIT HANDLER FOR SQLEXCEPTION
-    BEGIN
-        ROLLBACK;
-        RESIGNAL;
-    END;
+---- Procedure: Assign role to user
+--CREATE PROCEDURE AssignRoleToUser(
+--    IN p_user_id INT,
+--    IN p_role_id INT,
+--    IN p_assigned_by INT,
+--    IN p_expires_at DateTime
+--)
+--BEGIN
+--    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+--    BEGIN
+--        ROLLBACK;
+--        RESIGNAL;
+--    END;
     
-    START TRANSACTION;
+--    START TRANSACTION;
     
-    -- Insert user
-    INSERT INTO users (organization_id, username, email, password_hash, first_name, last_name, created_by)
-    VALUES (p_organization_id, p_username, p_email, p_password_hash, p_first_name, p_last_name, p_created_by);
+--    INSERT INTO user_roles (user_id, role_id, assigned_by, expires_at)
+--    VALUES (p_user_id, p_role_id, p_assigned_by, p_expires_at)
+--    ON DUPLICATE KEY UPDATE
+--        assigned_by = p_assigned_by,
+--        assigned_at = GETDATE(),
+--        expires_at = p_expires_at,
+--        is_active = 1;
     
-    SET p_user_id = LAST_INSERT_ID();
-    
-    -- Create user profile
-    INSERT INTO user_profiles (user_id) VALUES (p_user_id);
-    
-    -- Assign default role
-    SELECT id INTO role_id FROM roles WHERE slug = p_role_slug AND organization_id = p_organization_id LIMIT 1;
-    
-    IF role_id IS NOT NULL THEN
-        INSERT INTO user_roles (user_id, role_id, assigned_by)
-        VALUES (p_user_id, role_id, p_created_by);
-    END IF;
-    
-    COMMIT;
-END //
+--    COMMIT;
+--END //
 
-DELIMITER ;
+---- Procedure: Create user with default role
+--CREATE PROCEDURE CreateUserWithRole(
+--    IN p_organization_id INT,
+--    IN p_username VARCHAR(50),
+--    IN p_email VARCHAR(255),
+--    IN p_password_hash VARCHAR(255),
+--    IN p_first_name VARCHAR(100),
+--    IN p_last_name VARCHAR(100),
+--    IN p_role_slug VARCHAR(100),
+--    IN p_created_by INT,
+--    OUT p_user_id INT
+--)
+--BEGIN
+--    DECLARE role_id INT;
+--    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+--    BEGIN
+--        ROLLBACK;
+--        RESIGNAL;
+--    END;
+    
+--    START TRANSACTION;
+    
+--    -- Insert user
+--    INSERT INTO users (organization_id, username, email, password_hash, first_name, last_name, created_by)
+--    VALUES (p_organization_id, p_username, p_email, p_password_hash, p_first_name, p_last_name, p_created_by);
+    
+--    SET p_user_id = LAST_INSERT_ID();
+    
+--    -- Create user profile
+--    INSERT INTO user_profiles (user_id) VALUES (p_user_id);
+    
+--    -- Assign default role
+--    SELECT id INTO role_id FROM roles WHERE slug = p_role_slug AND organization_id = p_organization_id LIMIT 1;
+    
+--    IF role_id IS NOT NULL THEN
+--        INSERT INTO user_roles (user_id, role_id, assigned_by)
+--        VALUES (p_user_id, role_id, p_created_by);
+--    END IF;
+    
+--    COMMIT;
+--END //
+
+
 
 -- ============================================================================
 -- 13. INDEXES FOR PERFORMANCE
@@ -478,34 +486,3 @@ CREATE INDEX idx_user_sessions_last_activity ON user_sessions(last_activity_at);
 CREATE INDEX idx_users_last_login ON users(last_login_at);
 CREATE INDEX idx_user_roles_expires ON user_roles(expires_at);
 CREATE INDEX idx_user_permissions_expires ON user_permissions(expires_at);
-
--- ============================================================================
--- 14. SAMPLE QUERIES
--- ============================================================================
-
--- Get all permissions for a specific user
--- SELECT * FROM user_effective_permissions WHERE user_id = 1;
-
--- Get all users with a specific role
--- SELECT u.*, r.name as role_name 
--- FROM users u 
--- JOIN user_roles ur ON u.id = ur.user_id 
--- JOIN roles r ON ur.role_id = r.id 
--- WHERE r.slug = 'admin' AND ur.is_active = TRUE;
-
--- Get role hierarchy
--- SELECT r1.name as role, r2.name as can_manage 
--- FROM roles r1 
--- CROSS JOIN roles r2 
--- WHERE r1.level >= r2.level 
--- ORDER BY r1.level DESC, r2.level DESC;
-
--- Clean up expired sessions
--- DELETE FROM user_sessions WHERE expires_at < CURRENT_TIMESTAMP;
-
--- Clean up expired user roles
--- UPDATE user_roles SET is_active = FALSE WHERE expires_at < CURRENT_TIMESTAMP AND expires_at IS NOT NULL;
-
--- ============================================================================
--- END OF SCRIPT
--- ============================================================================
