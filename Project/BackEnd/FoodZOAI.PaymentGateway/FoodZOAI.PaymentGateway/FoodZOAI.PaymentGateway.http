@@ -1,6 +1,0 @@
-@FoodZOAI.PaymentGateway_HostAddress = http://localhost:5244
-
-GET {{FoodZOAI.PaymentGateway_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
