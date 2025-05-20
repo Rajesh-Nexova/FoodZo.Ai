@@ -1,0 +1,6 @@
+@FoodZOAI.UserManagement_HostAddress = http://localhost:5121
+
+GET {{FoodZOAI.UserManagement_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
