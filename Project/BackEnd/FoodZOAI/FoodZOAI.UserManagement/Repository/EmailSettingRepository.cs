@@ -1,4 +1,5 @@
 ﻿using FoodZOAI.UserManagement.Contracts;
+using FoodZOAI.UserManagement.DTOs;
 using FoodZOAI.UserManagement.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +12,33 @@ namespace FoodZOAI.UserManagement.Repository
         {
             _Context = Context;
         }
+
+
+        
+        public async Task<EmailSettingDTO?> GetActiveEmailSettingAsync()
+        {
+            var entity = await _Context.EmailSettings
+                .AsNoTracking()
+                .FirstOrDefaultAsync(e => e.IsActive);
+
+            if (entity == null)
+                return null;
+
+            return new EmailSettingDTO
+            {
+                Id = entity.Id,
+                Host = entity.Host,
+                UserName = entity.UserName,
+                Password = entity.Password,
+                IsEnableSsl = entity.IsEnableSsl,
+                IsDefault = entity.IsDefault,
+                IsActive = entity.IsActive,
+                CreatedByUser = entity.CreatedByUser,
+                ModifiedByUser = entity.ModifiedByUser,
+                DeletedByUser = entity.DeletedByUser
+            };
+        }
+        
         public async Task AddAsync(EmailSetting emailSetting)
         {
             _Context.EmailSettings.Add(emailSetting);
@@ -31,6 +59,8 @@ namespace FoodZOAI.UserManagement.Repository
         {
             return await _Context.EmailSettings.AnyAsync(e => e.Id == id);
         }
+
+        
 
         public async Task<IEnumerable<EmailSetting>> GetAllAsync()
         {

@@ -34,7 +34,7 @@ namespace FoodZOAI.UserManagement.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, "An error occurred while retrieving the email settings.");
+                return StatusCode(500, "An error occurred while retrieving the Email Templates.");
             }
         }
 
@@ -45,7 +45,7 @@ namespace FoodZOAI.UserManagement.Controllers
             {
                 var setting = await _emailTemplateRepository.GetByIdAsync(id);
                 if (setting == null)
-                    return NotFound("Email setting not found.");
+                    return NotFound("Email Templates not found.");
 
                 var result = _emailTemplateMapper.MapToDTO(setting);
                 return Ok(result);

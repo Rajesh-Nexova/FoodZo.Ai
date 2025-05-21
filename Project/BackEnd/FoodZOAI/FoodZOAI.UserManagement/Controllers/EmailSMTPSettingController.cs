@@ -75,13 +75,13 @@ namespace FoodZOAI.UserManagement.Controllers
             }
         }
 
-        /*[HttpPost("AddEmailTemplate")]
-        public async Task<IActionResult> AddEmailTemplate([FromBody] EmailTemplateDTO templateDto)
+        [HttpPost("AddEmailSMTPSetting")]
+        public async Task<IActionResult> AddEmailSMTPSetting([FromBody] EmailSettingDTO templateDto)
         {
             try
             {
                 if (templateDto == null)
-                    return BadRequest("Email template data is required.");
+                    return BadRequest("EmailSMTPSetting data is required.");
 
                 var template = _emailSettingMapper.MapToDomain(templateDto);
 
@@ -91,14 +91,14 @@ namespace FoodZOAI.UserManagement.Controllers
                 await _emailSettingRepository.AddAsync(template);
 
                 var resultDto = _emailSettingMapper.MapToDTO(template);
-                return CreatedAtAction(nameof(GetEmailTemplateById), new { id = template.Id }, resultDto);
+                return CreatedAtAction(nameof(GetEmailSMTPSettingById), new { id = template.Id }, resultDto);
             }
             catch (Exception ex)
             {
                 var innerMessage = ex.InnerException != null ? ex.InnerException.Message : "";
                 return StatusCode(500, $"An error occurred while adding the email template: {ex.Message} {innerMessage}");
             }
-        }*/
+        }
 
 
 
@@ -111,7 +111,7 @@ namespace FoodZOAI.UserManagement.Controllers
                 if (existing == null)
                     return NotFound("Email setting not found.");
 
-                // Update fields
+                
                 existing.Host = updatedDto.Host;
                 existing.UserName = updatedDto.UserName;
                 existing.Password = updatedDto.Password;
