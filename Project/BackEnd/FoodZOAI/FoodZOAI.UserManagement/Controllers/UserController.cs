@@ -296,5 +296,48 @@ namespace FoodZOAI.UserManagement.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+        // GET: api/User/GetUsers?pageNumber=1&pageSize=10
+        [HttpGet("GetUsers")]
+        public async Task<IActionResult> GetUsers([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        {
+            try
+            {
+                var users = await _userRepository.GetPaginatedUsersAsync(pageNumber, pageSize);
+                var totalCount = await _userRepository.GetTotalUserCountAsync();
+
+                var result = _userMapper.MapList(users.ToList());
+
+                return Ok(new
+                {
+                    TotalCount = totalCount,
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    Users = result
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        // GET: api/User/GetRecentlyRegisteredUsers?days=7
+        [HttpGet("GetRecentlyRegisteredUsers")]
+        public async Task<IActionResult> GetRecentlyRegisteredUsers([FromQuery] int days = 7)
+        {
+            try
+            {
+                var fromDate = DateTime.UtcNow.AddDays(-days);
+                var recentUsers = await _userRepository.GetUsersRegisteredAfterAsync(fromDate);
+                var result = _userMapper.MapList(recentUsers.ToList());
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
     }
 }
