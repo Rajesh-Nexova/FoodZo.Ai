@@ -1,0 +1,101 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using FoodZOAI.UserManagement.Configuration.Contracts;
+using FoodZOAI.UserManagement.DTOs;
+using FoodZOAI.UserManagement.Models;
+
+namespace FoodZOAI.UserManagement.Configuration.Mappers
+{
+    public class UserMapper : IMapperService<User, UserDTO>
+    {
+        public UserDTO Map(User source)
+        {
+            return new UserDTO
+            {
+                Id = source.Id,
+                OrganizationId = source.OrganizationId ?? 0,
+                Username = source.Username,
+                Email = source.Email,
+                EmailVerifiedAt = source.EmailVerifiedAt,
+                PasswordHash = source.PasswordHash,
+                Salt = source.Salt,
+                FirstName = source.FirstName,
+                LastName = source.LastName,
+                Phone = source.Phone,
+                AvatarUrl = source.AvatarUrl,
+                Status = source.Status,
+                LastLoginAt = source.LastLoginAt,
+                PasswordChangedAt = source.PasswordChangedAt,
+                FailedLoginAttempts = source.FailedLoginAttempts ?? 0,
+                LockedUntil = source.LockedUntil,
+                TwoFactorEnabled = source.TwoFactorEnabled ?? false,
+                TwoFactorSecret = source.TwoFactorSecret,
+                CreatedBy = source.CreatedBy,
+                CreatedAt = source.CreatedAt ?? DateTime.UtcNow,
+                UpdatedAt = source.UpdatedAt,
+                DeletedAt = source.DeletedAt
+            };
+        }
+
+        public List<UserDTO> MapList(List<User> source)
+        {
+            return source.Select(Map).ToList();
+        }
+
+        public User MapToEntity(UserDTO dto)
+        {
+            return new User
+            {
+                Id = dto.Id,
+                OrganizationId = dto.OrganizationId,
+                Username = dto.Username,
+                Email = dto.Email,
+                EmailVerifiedAt = dto.EmailVerifiedAt,
+                PasswordHash = dto.PasswordHash,
+                Salt = dto.Salt,
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
+                Phone = dto.Phone,
+                AvatarUrl = dto.AvatarUrl,
+                Status = dto.Status,
+                LastLoginAt = dto.LastLoginAt,
+                PasswordChangedAt = dto.PasswordChangedAt,
+                FailedLoginAttempts = dto.FailedLoginAttempts,
+                LockedUntil = dto.LockedUntil,
+                TwoFactorEnabled = dto.TwoFactorEnabled,
+                TwoFactorSecret = dto.TwoFactorSecret,
+                CreatedBy = dto.CreatedBy,
+                CreatedAt = dto.CreatedAt,
+                UpdatedAt = dto.UpdatedAt,
+                DeletedAt = dto.DeletedAt
+            };
+        }
+
+        public User MapToEntity(UserDTO dto, User existingEntity)
+        {
+            existingEntity.OrganizationId = dto.OrganizationId;
+            existingEntity.Username = dto.Username;
+            existingEntity.Email = dto.Email;
+            existingEntity.EmailVerifiedAt = dto.EmailVerifiedAt;
+            existingEntity.PasswordHash = dto.PasswordHash;
+            existingEntity.Salt = dto.Salt;
+            existingEntity.FirstName = dto.FirstName;
+            existingEntity.LastName = dto.LastName;
+            existingEntity.Phone = dto.Phone;
+            existingEntity.AvatarUrl = dto.AvatarUrl;
+            existingEntity.Status = dto.Status;
+            existingEntity.LastLoginAt = dto.LastLoginAt;
+            existingEntity.PasswordChangedAt = dto.PasswordChangedAt;
+            existingEntity.FailedLoginAttempts = dto.FailedLoginAttempts;
+            existingEntity.LockedUntil = dto.LockedUntil;
+            existingEntity.TwoFactorEnabled = dto.TwoFactorEnabled;
+            existingEntity.TwoFactorSecret = dto.TwoFactorSecret;
+            existingEntity.CreatedBy = dto.CreatedBy;
+            existingEntity.UpdatedAt = DateTime.UtcNow;
+
+            return existingEntity;
+        }
+
+    }
+}

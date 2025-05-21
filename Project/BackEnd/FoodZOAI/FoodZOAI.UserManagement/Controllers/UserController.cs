@@ -1,208 +1,300 @@
-﻿using System.Text;
-using FoodZOAI.UserManagement.Configuration.Contracts;
+﻿using FoodZOAI.UserManagement.Configuration.Contracts;
 using FoodZOAI.UserManagement.Contracts;
 using FoodZOAI.UserManagement.DTOs;
 using FoodZOAI.UserManagement.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Cryptography;
-using Microsoft.AspNetCore.Identity.Data;
 using FoodZOAI.UserManagement.Utils;
-
-
+using FoodZOAI.UserManagement.Services;
 
 namespace FoodZOAI.UserManagement.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-
     public class UserController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
         private readonly IUserProfileRepository _userProfileRepository;
         private readonly IMapperService<User, UserDTO> _userMapper;
         private readonly IMapperService<UserProfile, UserProfileDTO> _userProfileMapper;
-
-
+        private readonly IFileService _fileService;
 
         public UserController(
-           IUserRepository userRepository,
-           IUserProfileRepository userProfileRepository,
-           IMapperService<User, UserDTO> userMapper,
-           IMapperService<UserProfile, UserProfileDTO> userProfileMapper)
+            IUserRepository userRepository,
+            IUserProfileRepository userProfileRepository,
+            IMapperService<User, UserDTO> userMapper,
+            IMapperService<UserProfile, UserProfileDTO> userProfileMapper,
+            IFileService fileService)
         {
             _userRepository = userRepository;
             _userProfileRepository = userProfileRepository;
             _userMapper = userMapper;
             _userProfileMapper = userProfileMapper;
+            _fileService = fileService;
         }
-
 
         [HttpPost("AddUser")]
         public async Task<IActionResult> AddUser([FromBody] UserDTO userDto)
         {
-            var user = new User
+            try
             {
-                OrganizationId = userDto.OrganizationId,
-                Username = userDto.Username,
-                Email = userDto.Email,
-                PasswordHash = userDto.PasswordHash,
-                Salt = userDto.Salt,
-                FirstName = userDto.FirstName,
-                LastName = userDto.LastName,
-                Phone = userDto.Phone,
-                AvatarUrl = userDto.AvatarUrl,
-                Status = userDto.Status,
-                CreatedAt = DateTime.UtcNow,
-                CreatedBy = userDto.CreatedBy
-            };
+                var salt = PasswordHelper.GenerateSalt();
+                var hashedPassword = PasswordHelper.HashPassword(userDto.PasswordHash, salt);
 
+                var user = new User
+                {
+                    OrganizationId = userDto.OrganizationId,
+                    Username = userDto.Username,
+                    Email = userDto.Email,
+                    PasswordHash = hashedPassword,
+                    Salt = salt,
+                    FirstName = userDto.FirstName,
+                    LastName = userDto.LastName,
+                    Phone = userDto.Phone,
+                    AvatarUrl = userDto.AvatarUrl,
+                    Status = userDto.Status,
+                    CreatedAt = DateTime.UtcNow,
+                    CreatedBy = userDto.CreatedBy
+                };
 
-
-            var createdUser = await _userRepository.AddUserAsync(user);
-            var resultDto = _userMapper.Map(createdUser);
-
-            return Ok(resultDto);
+                var createdUser = await _userRepository.AddUserAsync(user);
+                var resultDto = _userMapper.Map(createdUser);
+                return Ok(resultDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
-
 
         [HttpGet("GetAllUsers")]
         public async Task<IActionResult> GetAllUsers()
         {
-            var users = await _userRepository.GetAllUsersAsync();
-            var result = _userMapper.MapList(users.ToList());
-            return Ok(result);
+            try
+            {
+                var users = await _userRepository.GetAllUsersAsync();
+                var result = _userMapper.MapList(users.ToList());
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
-
 
         [HttpGet("GetUser/{id}")]
         public async Task<IActionResult> GetUser(int id)
         {
-            var user = await _userRepository.GetUserByIdAsync(id);
-            if (user == null)
-                return NotFound();
+            try
+            {
+                var user = await _userRepository.GetUserByIdAsync(id);
+                if (user == null)
+                    return NotFound();
 
-            var dto = _userMapper.Map(user);
-            return Ok(dto);
+                var result = _userMapper.Map(user);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
-
-
-        [HttpGet("GetUsers")]
-        public async Task<IActionResult> GetUsers([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
-        {
-            var users = await _userRepository.GetPaginatedUsersAsync(page, pageSize);
-            var result = _userMapper.MapList(users.ToList());
-            return Ok(result);
-        }
-
 
         [HttpPut("UpdateUser/{id}")]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] UserDTO userDto)
         {
-            var existingUser = await _userRepository.GetUserByIdAsync(id);
-            if (existingUser == null)
-                return NotFound();
+            try
+            {
+                var user = await _userRepository.GetUserByIdAsync(id);
+                if (user == null)
+                    return NotFound();
 
-            existingUser.FirstName = userDto.FirstName;
-            existingUser.LastName = userDto.LastName;
-            existingUser.Phone = userDto.Phone;
-            existingUser.Email = userDto.Email;
-            existingUser.UpdatedAt = DateTime.UtcNow;
+                user.FirstName = userDto.FirstName;
+                user.LastName = userDto.LastName;
+                user.Email = userDto.Email;
+                user.Phone = userDto.Phone;
+                user.Status = userDto.Status;
+                user.UpdatedAt = DateTime.UtcNow;
 
-            var updatedUser = await _userRepository.UpdateUserAsync(existingUser);
-            var result = _userMapper.Map(updatedUser);
-            return Ok(result);
+                var updatedUser = await _userRepository.UpdateUserAsync(user);
+                var result = _userMapper.Map(updatedUser);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
-
 
         [HttpDelete("DeleteUser/{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            await _userRepository.DeleteUserAsync(id);
-            return NoContent();
+            try
+            {
+                await _userRepository.DeleteUserAsync(id);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpPost("UserLogin")]
         public async Task<IActionResult> UserLogin([FromBody] UserLoginRequestDTO loginDto)
         {
-            var user = await _userRepository.GetUserByUsernameAsync(loginDto.Username);
+            try
+            {
+                var user = await _userRepository.GetUserByUsernameAsync(loginDto.Username);
+                if (user == null || !PasswordHelper.VerifyPassword(loginDto.Password, user.PasswordHash, user.Salt))
+                    return Unauthorized("Invalid credentials.");
 
-            if (user == null)
-                return Unauthorized("Invalid username or password.");
+                if (user.Status == "Locked")
+                    return Unauthorized("Account is locked.");
 
-            // Verify password hash
-            var hashedPassword = HashPassword(loginDto.Password, user.Salt);
-            if (user.PasswordHash != hashedPassword)
-                return Unauthorized("Invalid username or password.");
+                user.LastLoginAt = DateTime.UtcNow;
+                await _userRepository.UpdateUserAsync(user);
 
-            // Optional: check account status, locked out, etc.
-            if (user.Status == "Locked")
-                return Unauthorized("Account is locked.");
-
-            // Update last login timestamp
-            user.LastLoginAt = DateTime.UtcNow;
-            await _userRepository.UpdateUserAsync(user);
-
-            var userDto = _userMapper.Map(user);
-            return Ok(userDto);
+                var userDto = _userMapper.Map(user);
+                return Ok(userDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
-        private string HashPassword(string password, string salt)
-        {
-            using var sha256 = SHA256.Create();
-            var combined = Encoding.UTF8.GetBytes(password + salt);
-            var hash = sha256.ComputeHash(combined);
-            return Convert.ToBase64String(hash);
-        }
-
-        /*[HttpPost("ChangePassword")]
+        [HttpPost("ChangePassword")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
         {
-            var user = await _userRepository.GetByIdAsync(request.UserId);
+            try
+            {
+                var user = await _userRepository.GetByIdAsync(request.UserId);
+                if (user == null)
+                    return NotFound("User not found.");
 
-            if (user == null)
-                return NotFound("User not found.");
+                if (!PasswordHelper.VerifyPassword(request.CurrentPassword, user.PasswordHash, user.Salt))
+                    return BadRequest("Incorrect current password.");
 
-            // Verify current password
-            bool currentPasswordValid = PasswordHelper.VerifyPassword(request.CurrentPassword, user.PasswordHash, user.Salt);
-            if (!currentPasswordValid)
-                return BadRequest("Current password is incorrect.");
+                var newSalt = PasswordHelper.GenerateSalt();
+                var newHash = PasswordHelper.HashPassword(request.NewPassword, newSalt);
 
-            // Hash new password + generate new salt
-            var newSalt = PasswordHelper.GenerateSalt();
-            var newHash = PasswordHelper.HashPassword(request.NewPassword, newSalt);
+                user.Salt = newSalt;
+                user.PasswordHash = newHash;
+                user.PasswordChangedAt = DateTime.UtcNow;
 
-            user.PasswordHash = newHash;
-            user.Salt = newSalt;
-            user.PasswordChangedAt = DateTime.UtcNow;
-
-            await _userRepository.UpdateAsync(user);
-
-            return Ok("Password changed successfully.");
+                await _userRepository.UpdateAsync(user);
+                return Ok("Password changed successfully.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpPost("ResetPassword")]
-    
-        public async Task<IActionResult> ResetPassword([FromBody] FoodZOAI.UserManagement.DTOs.ResetPasswordRequest request)
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
         {
-            var user = await _userRepository.GetByIdAsync(request.UserId);
+            try
+            {
+                var user = await _userRepository.GetByIdAsync(request.UserId);
+                if (user == null)
+                    return NotFound("User not found.");
 
+                var newSalt = PasswordHelper.GenerateSalt();
+                var newHash = PasswordHelper.HashPassword(request.NewPassword, newSalt);
+
+                user.Salt = newSalt;
+                user.PasswordHash = newHash;
+                user.PasswordChangedAt = DateTime.UtcNow;
+
+                await _userRepository.UpdateAsync(user);
+                return Ok("Password reset successfully.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPut("UpdateUserProfile/{id}")]
+        public async Task<IActionResult> UpdateUserProfile([FromBody] UserProfileDTO profileDto, int id)
+        {
+            try
+            {
+                var profile = await _userProfileRepository.GetByIdAsync(id);
+                if (profile == null)
+                    return NotFound("User profile not found.");
+
+                var updatedProfile = _userProfileMapper.MapToEntity(profileDto, profile);
+                await _userProfileRepository.UpdateAsync(updatedProfile);
+
+                var result = _userProfileMapper.Map(updatedProfile);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost("UpdateUserProfilePhoto")]
+        public async Task<IActionResult> UpdateUserProfilePhoto(int userId, IFormFile photo)
+        {
+            if (photo == null || photo.Length == 0)
+                return BadRequest("Invalid photo file.");
+
+            var photoUrl = await _fileService.SaveUserProfilePhotoAsync(userId, photo);
+
+            var user = await _userRepository.GetByIdAsync(userId);
             if (user == null)
                 return NotFound("User not found.");
 
-            // Continue with password reset logic
-            var newSalt = PasswordHelper.GenerateSalt();
-            var newHashedPassword = PasswordHelper.HashPassword(request.NewPassword, newSalt);
+            user.AvatarUrl = photoUrl;
+            await _userRepository.UpdateUserAsync(user);
 
-            user.PasswordHash = newHashedPassword;
-            user.Salt = newSalt;
-            user.PasswordChangedAt = DateTime.UtcNow;
-
-            await _userRepository.UpdateAsync(user);
-
-            return Ok("Password reset successfully.");
-        }*/
+            return Ok(new { PhotoUrl = photoUrl });
+        }
 
 
+        [HttpGet("GetProfile")]
+        public async Task<IActionResult> GetProfile([FromQuery] int userId)
+        {
+            try
+            {
+                var profile = await _userRepository.GetByUserIdAsync(userId);
+                if (profile == null)
+                    return NotFound("User profile not found.");
 
+                var result = _userMapper.Map(profile);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet("GetUserForDropdown")]
+        public async Task<IActionResult> GetUserForDropdown()
+        {
+            try
+            {
+                var users = await _userRepository.GetAllUsersAsync();
+                var result = users
+                    .Where(u => u.DeletedAt == null)
+                    .Select(u => new
+                    {
+                        u.Id,
+                        Name = $"{u.FirstName} {u.LastName}"
+                    })
+                    .ToList();
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
     }
 }
