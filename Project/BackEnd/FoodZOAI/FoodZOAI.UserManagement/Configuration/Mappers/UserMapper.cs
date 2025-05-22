@@ -43,6 +43,16 @@ namespace FoodZOAI.UserManagement.Configuration.Mappers
             return source.Select(Map).ToList();
         }
 
+        public UserDTO MapToDTO(User entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void MapToDTOList(List<User> users)
+        {
+            throw new NotImplementedException();
+        }
+
         public User MapToEntity(UserDTO dto)
         {
             return new User

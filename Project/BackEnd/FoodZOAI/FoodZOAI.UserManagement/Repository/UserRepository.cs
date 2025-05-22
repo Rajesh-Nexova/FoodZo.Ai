@@ -132,5 +132,31 @@ namespace FoodZOAI.UserManagement.Repository
             return await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
         }
 
+        
+
+        public async Task<int> GetTotalUserCountAsync()
+        {
+            return await _context.Users
+                .Where(u => u.DeletedAt == null)
+                .CountAsync();
+        }
+
+        public async Task<IEnumerable<User>> GetUsersRegisteredAfterAsync(DateTime fromDate)
+        {
+            return await _context.Users
+                .Where(u => u.CreatedAt >= fromDate && u.DeletedAt == null)
+                .OrderByDescending(u => u.CreatedAt)
+                .ToListAsync();
+        }
+
+        public Task<User> AddUser(User user)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<User> GetUserById(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

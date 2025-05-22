@@ -4,6 +4,9 @@ namespace FoodZOAI.UserManagement.Contracts
 {
     public interface IUserRepository
     {
+       
+
+
         Task<User> AddUserAsync(User user);
         Task<User?> GetUserByIdAsync(int id); // ✅ This line fixes your error
         Task<User> GetByIdAsync(int id);
@@ -20,5 +23,9 @@ namespace FoodZOAI.UserManagement.Contracts
         Task<IEnumerable<User>> GetUsersOrderedByCreationDateAsync(int count);
 
         Task<User> GetByUserIdAsync(int userId);
+
+         Task<int> GetTotalUserCountAsync();
+        Task<IEnumerable<User>> GetUsersRegisteredAfterAsync(DateTime fromDate);
+
     }
 }

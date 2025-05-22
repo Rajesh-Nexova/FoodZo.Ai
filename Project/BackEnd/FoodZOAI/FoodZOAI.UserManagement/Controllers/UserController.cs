@@ -2,9 +2,14 @@
 using FoodZOAI.UserManagement.Contracts;
 using FoodZOAI.UserManagement.DTOs;
 using FoodZOAI.UserManagement.Models;
-using Microsoft.AspNetCore.Mvc;
-using FoodZOAI.UserManagement.Utils;
 using FoodZOAI.UserManagement.Services;
+using FoodZOAI.UserManagement.Utils;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace FoodZOAI.UserManagement.Controllers
 {
@@ -17,327 +22,326 @@ namespace FoodZOAI.UserManagement.Controllers
         private readonly IMapperService<User, UserDTO> _userMapper;
         private readonly IMapperService<UserProfile, UserProfileDTO> _userProfileMapper;
         private readonly IFileService _fileService;
+        private readonly ILogger<UserController> _logger;
 
         public UserController(
             IUserRepository userRepository,
             IUserProfileRepository userProfileRepository,
             IMapperService<User, UserDTO> userMapper,
             IMapperService<UserProfile, UserProfileDTO> userProfileMapper,
-            IFileService fileService)
+            IFileService fileService,
+            ILogger<UserController> logger)
         {
             _userRepository = userRepository;
             _userProfileRepository = userProfileRepository;
             _userMapper = userMapper;
             _userProfileMapper = userProfileMapper;
             _fileService = fileService;
+            _logger = logger;
         }
+
+        // ────────────────────────────────────────────────────────────────
+        //  User CRUD
+        // ────────────────────────────────────────────────────────────────
 
         [HttpPost("AddUser")]
         public async Task<IActionResult> AddUser([FromBody] UserDTO userDto)
         {
-            try
-            {
-                var salt = PasswordHelper.GenerateSalt();
-                var hashedPassword = PasswordHelper.HashPassword(userDto.PasswordHash, salt);
+            _logger.LogInformation("AddUser called for Username: {Username}", userDto.Username);
 
-                var user = new User
-                {
-                    OrganizationId = userDto.OrganizationId,
-                    Username = userDto.Username,
-                    Email = userDto.Email,
-                    PasswordHash = hashedPassword,
-                    Salt = salt,
-                    FirstName = userDto.FirstName,
-                    LastName = userDto.LastName,
-                    Phone = userDto.Phone,
-                    AvatarUrl = userDto.AvatarUrl,
-                    Status = userDto.Status,
-                    CreatedAt = DateTime.UtcNow,
-                    CreatedBy = userDto.CreatedBy
-                };
+            var salt = PasswordHelper.GenerateSalt();
+            var hashedPassword = PasswordHelper.HashPassword(userDto.PasswordHash, salt);
 
-                var createdUser = await _userRepository.AddUserAsync(user);
-                var resultDto = _userMapper.Map(createdUser);
-                return Ok(resultDto);
-            }
-            catch (Exception ex)
+            var user = new User
             {
-                return StatusCode(500, ex.Message);
-            }
+                OrganizationId = userDto.OrganizationId,
+                Username = userDto.Username,
+                Email = userDto.Email,
+                PasswordHash = hashedPassword,
+                Salt = salt,
+                FirstName = userDto.FirstName,
+                LastName = userDto.LastName,
+                Phone = userDto.Phone,
+                AvatarUrl = userDto.AvatarUrl,
+                Status = userDto.Status,
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = userDto.CreatedBy
+            };
+
+            var createdUser = await _userRepository.AddUserAsync(user);
+            _logger.LogInformation("User created with Id: {UserId}", createdUser.Id);
+
+            return Ok(_userMapper.Map(createdUser));
         }
 
         [HttpGet("GetAllUsers")]
         public async Task<IActionResult> GetAllUsers()
         {
-            try
-            {
-                var users = await _userRepository.GetAllUsersAsync();
-                var result = _userMapper.MapList(users.ToList());
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            _logger.LogInformation("GetAllUsers called");
+
+            var users = await _userRepository.GetAllUsersAsync();
+            var result = _userMapper.MapList(users.ToList());
+
+            _logger.LogInformation("GetAllUsers returned {Count} users", result.Count);
+            return Ok(result);
         }
 
-        [HttpGet("GetUser/{id}")]
+        [HttpGet("GetUser/{id:int}")]
         public async Task<IActionResult> GetUser(int id)
         {
-            try
-            {
-                var user = await _userRepository.GetUserByIdAsync(id);
-                if (user == null)
-                    return NotFound();
+            _logger.LogInformation("GetUser called for Id: {Id}", id);
 
-                var result = _userMapper.Map(user);
-                return Ok(result);
-            }
-            catch (Exception ex)
+            var user = await _userRepository.GetUserByIdAsync(id);
+            if (user == null)
             {
-                return StatusCode(500, ex.Message);
+                _logger.LogWarning("GetUser: user with Id {Id} not found", id);
+                return NotFound();
             }
+
+            return Ok(_userMapper.Map(user));
         }
 
-        [HttpPut("UpdateUser/{id}")]
+        [HttpPut("UpdateUser/{id:int}")]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] UserDTO userDto)
         {
-            try
-            {
-                var user = await _userRepository.GetUserByIdAsync(id);
-                if (user == null)
-                    return NotFound();
+            _logger.LogInformation("UpdateUser called for Id: {Id}", id);
 
-                user.FirstName = userDto.FirstName;
-                user.LastName = userDto.LastName;
-                user.Email = userDto.Email;
-                user.Phone = userDto.Phone;
-                user.Status = userDto.Status;
-                user.UpdatedAt = DateTime.UtcNow;
-
-                var updatedUser = await _userRepository.UpdateUserAsync(user);
-                var result = _userMapper.Map(updatedUser);
-                return Ok(result);
-            }
-            catch (Exception ex)
+            var user = await _userRepository.GetUserByIdAsync(id);
+            if (user == null)
             {
-                return StatusCode(500, ex.Message);
+                _logger.LogWarning("UpdateUser: user with Id {Id} not found", id);
+                return NotFound();
             }
+
+            user.FirstName = userDto.FirstName;
+            user.LastName = userDto.LastName;
+            user.Email = userDto.Email;
+            user.Phone = userDto.Phone;
+            user.Status = userDto.Status;
+            user.UpdatedAt = DateTime.UtcNow;
+
+            var updatedUser = await _userRepository.UpdateUserAsync(user);
+            _logger.LogInformation("UpdateUser succeeded for Id: {Id}", id);
+
+            return Ok(_userMapper.Map(updatedUser));
         }
 
-        [HttpDelete("DeleteUser/{id}")]
+        [HttpDelete("DeleteUser/{id:int}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            try
-            {
-                await _userRepository.DeleteUserAsync(id);
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            _logger.LogInformation("DeleteUser called for Id: {Id}", id);
+
+            await _userRepository.DeleteUserAsync(id);
+            _logger.LogInformation("DeleteUser succeeded for Id: {Id}", id);
+
+            return NoContent();
         }
+
+        // ────────────────────────────────────────────────────────────────
+        //  Authentication & Password
+        // ────────────────────────────────────────────────────────────────
 
         [HttpPost("UserLogin")]
         public async Task<IActionResult> UserLogin([FromBody] UserLoginRequestDTO loginDto)
         {
-            try
+            _logger.LogInformation("UserLogin attempt for Username: {Username}", loginDto.Username);
+
+            var user = await _userRepository.GetUserByUsernameAsync(loginDto.Username);
+            if (user == null || !PasswordHelper.VerifyPassword(loginDto.Password, user.PasswordHash, user.Salt))
             {
-                var user = await _userRepository.GetUserByUsernameAsync(loginDto.Username);
-                if (user == null || !PasswordHelper.VerifyPassword(loginDto.Password, user.PasswordHash, user.Salt))
-                    return Unauthorized("Invalid credentials.");
-
-                if (user.Status == "Locked")
-                    return Unauthorized("Account is locked.");
-
-                user.LastLoginAt = DateTime.UtcNow;
-                await _userRepository.UpdateUserAsync(user);
-
-                var userDto = _userMapper.Map(user);
-                return Ok(userDto);
+                _logger.LogWarning("UserLogin failed for Username: {Username}", loginDto.Username);
+                return Unauthorized("Invalid credentials.");
             }
-            catch (Exception ex)
+
+            if (user.Status == "Locked")
             {
-                return StatusCode(500, ex.Message);
+                _logger.LogWarning("UserLogin failed (Locked) for Username: {Username}", loginDto.Username);
+                return Unauthorized("Account is locked.");
             }
+
+            user.LastLoginAt = DateTime.UtcNow;
+            await _userRepository.UpdateUserAsync(user);
+
+            _logger.LogInformation("UserLogin successful for Username: {Username}", loginDto.Username);
+            return Ok(_userMapper.Map(user));
         }
 
         [HttpPost("ChangePassword")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
         {
-            try
+            _logger.LogInformation("ChangePassword called for UserId: {Id}", request.UserId);
+
+            var user = await _userRepository.GetByIdAsync(request.UserId);
+            if (user == null)
             {
-                var user = await _userRepository.GetByIdAsync(request.UserId);
-                if (user == null)
-                    return NotFound("User not found.");
-
-                if (!PasswordHelper.VerifyPassword(request.CurrentPassword, user.PasswordHash, user.Salt))
-                    return BadRequest("Incorrect current password.");
-
-                var newSalt = PasswordHelper.GenerateSalt();
-                var newHash = PasswordHelper.HashPassword(request.NewPassword, newSalt);
-
-                user.Salt = newSalt;
-                user.PasswordHash = newHash;
-                user.PasswordChangedAt = DateTime.UtcNow;
-
-                await _userRepository.UpdateAsync(user);
-                return Ok("Password changed successfully.");
+                _logger.LogWarning("ChangePassword: user with Id {Id} not found", request.UserId);
+                return NotFound("User not found.");
             }
-            catch (Exception ex)
+
+            if (!PasswordHelper.VerifyPassword(request.CurrentPassword, user.PasswordHash, user.Salt))
             {
-                return StatusCode(500, ex.Message);
+                _logger.LogWarning("ChangePassword failed: incorrect current password for UserId {Id}", request.UserId);
+                return BadRequest("Incorrect current password.");
             }
+
+            var newSalt = PasswordHelper.GenerateSalt();
+            var newHash = PasswordHelper.HashPassword(request.NewPassword, newSalt);
+
+            user.Salt = newSalt;
+            user.PasswordHash = newHash;
+            user.PasswordChangedAt = DateTime.UtcNow;
+
+            await _userRepository.UpdateAsync(user);
+            _logger.LogInformation("ChangePassword succeeded for UserId: {Id}", request.UserId);
+
+            return Ok("Password changed successfully.");
         }
 
         [HttpPost("ResetPassword")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
         {
-            try
+            _logger.LogInformation("ResetPassword called for UserId: {Id}", request.UserId);
+
+            var user = await _userRepository.GetByIdAsync(request.UserId);
+            if (user == null)
             {
-                var user = await _userRepository.GetByIdAsync(request.UserId);
-                if (user == null)
-                    return NotFound("User not found.");
-
-                var newSalt = PasswordHelper.GenerateSalt();
-                var newHash = PasswordHelper.HashPassword(request.NewPassword, newSalt);
-
-                user.Salt = newSalt;
-                user.PasswordHash = newHash;
-                user.PasswordChangedAt = DateTime.UtcNow;
-
-                await _userRepository.UpdateAsync(user);
-                return Ok("Password reset successfully.");
+                _logger.LogWarning("ResetPassword: user with Id {Id} not found", request.UserId);
+                return NotFound("User not found.");
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+
+            var newSalt = PasswordHelper.GenerateSalt();
+            var newHash = PasswordHelper.HashPassword(request.NewPassword, newSalt);
+
+            user.Salt = newSalt;
+            user.PasswordHash = newHash;
+            user.PasswordChangedAt = DateTime.UtcNow;
+
+            await _userRepository.UpdateAsync(user);
+            _logger.LogInformation("ResetPassword succeeded for UserId: {Id}", request.UserId);
+
+            return Ok("Password reset successfully.");
         }
 
-        [HttpPut("UpdateUserProfile/{id}")]
+        // ────────────────────────────────────────────────────────────────
+        //  Profiles & Photos
+        // ────────────────────────────────────────────────────────────────
+
+        [HttpPut("UpdateUserProfile/{id:int}")]
         public async Task<IActionResult> UpdateUserProfile([FromBody] UserProfileDTO profileDto, int id)
         {
-            try
-            {
-                var profile = await _userProfileRepository.GetByIdAsync(id);
-                if (profile == null)
-                    return NotFound("User profile not found.");
+            _logger.LogInformation("UpdateUserProfile called for ProfileId: {Id}", id);
 
-                var updatedProfile = _userProfileMapper.MapToEntity(profileDto, profile);
-                await _userProfileRepository.UpdateAsync(updatedProfile);
-
-                var result = _userProfileMapper.Map(updatedProfile);
-                return Ok(result);
-            }
-            catch (Exception ex)
+            var profile = await _userProfileRepository.GetByIdAsync(id);
+            if (profile == null)
             {
-                return StatusCode(500, ex.Message);
+                _logger.LogWarning("UpdateUserProfile: profile with Id {Id} not found", id);
+                return NotFound("User profile not found.");
             }
+
+            var updatedProfile = _userProfileMapper.MapToEntity(profileDto, profile);
+            await _userProfileRepository.UpdateAsync(updatedProfile);
+
+            _logger.LogInformation("UpdateUserProfile succeeded for ProfileId: {Id}", id);
+            return Ok(_userProfileMapper.Map(updatedProfile));
         }
 
         [HttpPost("UpdateUserProfilePhoto")]
         public async Task<IActionResult> UpdateUserProfilePhoto(int userId, IFormFile photo)
         {
+            _logger.LogInformation("UpdateUserProfilePhoto called for UserId: {Id}", userId);
+
             if (photo == null || photo.Length == 0)
+            {
+                _logger.LogWarning("UpdateUserProfilePhoto failed: invalid photo for UserId: {Id}", userId);
                 return BadRequest("Invalid photo file.");
+            }
 
             var photoUrl = await _fileService.SaveUserProfilePhotoAsync(userId, photo);
 
             var user = await _userRepository.GetByIdAsync(userId);
             if (user == null)
+            {
+                _logger.LogWarning("UpdateUserProfilePhoto: user with Id {Id} not found", userId);
                 return NotFound("User not found.");
+            }
 
             user.AvatarUrl = photoUrl;
             await _userRepository.UpdateUserAsync(user);
 
+            _logger.LogInformation("UpdateUserProfilePhoto succeeded for UserId: {Id}", userId);
             return Ok(new { PhotoUrl = photoUrl });
         }
-
 
         [HttpGet("GetProfile")]
         public async Task<IActionResult> GetProfile([FromQuery] int userId)
         {
-            try
-            {
-                var profile = await _userRepository.GetByUserIdAsync(userId);
-                if (profile == null)
-                    return NotFound("User profile not found.");
+            _logger.LogInformation("GetProfile called for UserId: {Id}", userId);
 
-                var result = _userMapper.Map(profile);
-                return Ok(result);
-            }
-            catch (Exception ex)
+            var profile = await _userRepository.GetByUserIdAsync(userId);
+            if (profile == null)
             {
-                return StatusCode(500, ex.Message);
+                _logger.LogWarning("GetProfile: profile not found for UserId {Id}", userId);
+                return NotFound("User profile not found.");
             }
+
+            return Ok(_userMapper.Map(profile));
         }
+
+        // ────────────────────────────────────────────────────────────────
+        //  Lists & Queries
+        // ────────────────────────────────────────────────────────────────
 
         [HttpGet("GetUserForDropdown")]
         public async Task<IActionResult> GetUserForDropdown()
         {
-            try
-            {
-                var users = await _userRepository.GetAllUsersAsync();
-                var result = users
-                    .Where(u => u.DeletedAt == null)
-                    .Select(u => new
-                    {
-                        u.Id,
-                        Name = $"{u.FirstName} {u.LastName}"
-                    })
-                    .ToList();
+            _logger.LogInformation("GetUserForDropdown called");
 
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            var users = await _userRepository.GetAllUsersAsync();
+            var result = users
+                .Where(u => u.DeletedAt == null)
+                .Select(u => new
+                {
+                    u.Id,
+                    Name = $"{u.FirstName} {u.LastName}"
+                })
+                .ToList();
+
+            _logger.LogInformation("GetUserForDropdown returned {Count} entries", result.Count);
+            return Ok(result);
         }
 
         // GET: api/User/GetUsers?pageNumber=1&pageSize=10
         [HttpGet("GetUsers")]
         public async Task<IActionResult> GetUsers([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            try
-            {
-                var users = await _userRepository.GetPaginatedUsersAsync(pageNumber, pageSize);
-                var totalCount = await _userRepository.GetTotalUserCountAsync();
+            _logger.LogInformation("GetUsers called: pageNumber={PageNumber}, pageSize={PageSize}", pageNumber, pageSize);
 
-                var result = _userMapper.MapList(users.ToList());
+            var users = await _userRepository.GetPaginatedUsersAsync(pageNumber, pageSize);
+            var totalCount = await _userRepository.GetTotalUserCountAsync();
 
-                return Ok(new
-                {
-                    TotalCount = totalCount,
-                    PageNumber = pageNumber,
-                    PageSize = pageSize,
-                    Users = result
-                });
-            }
-            catch (Exception ex)
+            var result = _userMapper.MapList(users.ToList());
+
+            return Ok(new
             {
-                return StatusCode(500, ex.Message);
-            }
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                Users = result
+            });
         }
 
         // GET: api/User/GetRecentlyRegisteredUsers?days=7
         [HttpGet("GetRecentlyRegisteredUsers")]
         public async Task<IActionResult> GetRecentlyRegisteredUsers([FromQuery] int days = 7)
         {
-            try
-            {
-                var fromDate = DateTime.UtcNow.AddDays(-days);
-                var recentUsers = await _userRepository.GetUsersRegisteredAfterAsync(fromDate);
-                var result = _userMapper.MapList(recentUsers.ToList());
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
+            _logger.LogInformation("GetRecentlyRegisteredUsers called: days={Days}", days);
 
+            var fromDate = DateTime.UtcNow.AddDays(-days);
+            var recentUsers = await _userRepository.GetUsersRegisteredAfterAsync(fromDate);
+            var result = _userMapper.MapList(recentUsers.ToList());
+
+            _logger.LogInformation("GetRecentlyRegisteredUsers returned {Count} users", result.Count);
+            return Ok(result);
+        }
     }
 }
