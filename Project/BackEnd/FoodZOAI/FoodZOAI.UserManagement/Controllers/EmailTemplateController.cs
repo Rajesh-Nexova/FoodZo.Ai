@@ -86,7 +86,7 @@ namespace FoodZOAI.UserManagement.Controllers
                 if (existing == null)
                     return NotFound("Email template not found.");
 
-                // Update fields
+              
                 existing.Name = updatedDto.Name;
                 existing.Subject = updatedDto.Subject;
                 existing.Body = updatedDto.Body;

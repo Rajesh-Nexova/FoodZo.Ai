@@ -4,6 +4,6 @@ namespace FoodZOAI.UserManagement.Services
 {
     public interface IEmailService
     {
-        Task<bool> SendEmailAsync(SendEmailDTO emailDto);
+        Task<bool> SendEmailAsync(SendEmailDTO dto, int? smtpSettingId);
     }
 }

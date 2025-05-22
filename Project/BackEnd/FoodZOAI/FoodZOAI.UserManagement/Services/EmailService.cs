@@ -10,44 +10,59 @@ namespace FoodZOAI.UserManagement.Services
     {
 
         private readonly IEmailSettingRepository _emailSettingRepository;
-
+       
         public EmailService(IEmailSettingRepository emailSettingRepository)
         {
             _emailSettingRepository = emailSettingRepository;
+            
         }
-        public async Task<bool> SendEmailAsync(SendEmailDTO emailDto)
+
+        public  async Task<bool> SendEmailAsync(SendEmailDTO dto, int? smtpSettingId)
         {
             try
             {
-                var setting = await _emailSettingRepository.GetActiveEmailSettingAsync();
-                if (setting == null)
-                    throw new InvalidOperationException("No active email setting found.");
+                var smtp = smtpSettingId.HasValue
+                    ? await _emailSettingRepository.GetByIdAsync(smtpSettingId.Value)
+                    : await _emailSettingRepository.GetDefaultActiveAsync();
 
-                var smtpClient = new SmtpClient(setting.Host)
+                if (smtp == null)
                 {
-                    Port = 587, // Optional: make port part of DTO
-                    Credentials = new NetworkCredential(setting.UserName, setting.Password),
-                    EnableSsl = setting.IsEnableSsl
+                   
+                    return true;
+                }
+
+                int port = smtp.Host switch
+                {
+                    "smtp.gmail.com" => 587,
+                    "smtp.sendgrid.net" => 465,
+                    "smtp.office365.com" => 587,
+                    _ => 25
                 };
 
-                var mailMessage = new MailMessage
+                using var client = new SmtpClient(smtp.Host, port)
                 {
-                    From = new MailAddress(setting.UserName, emailDto.FromName ?? "System"),
-                    Subject = emailDto.Subject,
-                    Body = emailDto.Body,
-                    IsBodyHtml = emailDto.IsHtml
+                    Credentials = new NetworkCredential(smtp.UserName, smtp.Password),
+                    EnableSsl = smtp.IsEnableSsl
                 };
 
-                emailDto.To?.ForEach(to => mailMessage.To.Add(to));
-                emailDto.Cc?.ForEach(cc => mailMessage.CC.Add(cc));
-                emailDto.Bcc?.ForEach(bcc => mailMessage.Bcc.Add(bcc));
+                var mail = new MailMessage
+                {
+                    From = new MailAddress(smtp.UserName, dto.FromName ?? smtp.UserName),
+                    Subject = dto.Subject,
+                    Body = dto.Body,
+                    IsBodyHtml = dto.IsHtml
+                };
 
-                await smtpClient.SendMailAsync(mailMessage);
+                dto.To.ForEach(to => mail.To.Add(to));
+                dto.Cc?.ForEach(cc => mail.CC.Add(cc));
+                dto.Bcc?.ForEach(bcc => mail.Bcc.Add(bcc));
+
+                await client.SendMailAsync(mail);
                 return true;
             }
             catch (Exception ex)
             {
-                // Log exception here
+                Console.WriteLine($"Error sending email: {ex.Message}");
                 return false;
             }
         }

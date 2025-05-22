@@ -20,19 +20,37 @@ namespace FoodZOAI.UserManagement.Controllers
         [HttpGet("active-mail-settings")]
         public async Task<IActionResult> GetAllActiveEmailSettings()
         {
-            var settings = await _emailSettingRepository.GetActiveEmailSettingAsync();
-            return Ok(settings);
+            
+
+            try
+            {
+                var settings = await _emailSettingRepository.GetDefaultActiveAsync();
+                return Ok(settings);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "An error occurred while retrieving the email .");
+            }
+
+
         }
 
-        [HttpPost("sendEmail")]
-
-        public async Task<IActionResult> SendEmail([FromBody] SendEmailDTO emailDto)
+        
+        
+        [HttpPost("send-email")]
+        public async Task<IActionResult> SendEmail([FromBody] SendEmailDTO dto, [FromQuery] int? smtpSettingId)
         {
-            var result = await _emailService.SendEmailAsync(emailDto);
-            if (!result)
-                return StatusCode(500, "Email sending failed.");
-            return Ok("Email sent successfully.");
-        }
+            try
+            {
+                var result = await _emailService.SendEmailAsync(dto, smtpSettingId);
 
+                return Ok(result);
+                
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "An error occurred while  the Email sent.");
+            }
+        }
     }
 }
