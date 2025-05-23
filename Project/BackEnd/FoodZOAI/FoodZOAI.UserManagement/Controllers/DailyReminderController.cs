@@ -1,6 +1,6 @@
 ﻿using FoodZOAI.UserManagement.Configuration.Contracts;
 using FoodZOAI.UserManagement.Contracts;
-using Microsoft.AspNetCore.Http;
+using FoodZOAI.UserManagement.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoodZOAI.UserManagement.Controllers
@@ -11,11 +11,13 @@ namespace FoodZOAI.UserManagement.Controllers
     {
         private readonly IDailyReminderRepository _dailyReminderRepository;
         private readonly IDailyReminderMapper _dailyReminderMapper;
-        public DailyReminderController(IDailyReminderRepository dailyReminderRepository, IDailyReminderMapper dailyReminderMapper)
+        private readonly IWeeklyReminderMapper _weeklyReminderMapper;
+        private readonly IDailyReminderMapper _weeklyReminderRepository;
+        public DailyReminderController(IDailyReminderRepository dailyReminderRepository, IDailyReminderMapper dailyReminderMapper, IDailyReminderMapper weeklyReminderRepository)
         {
             _dailyReminderRepository = dailyReminderRepository;
-            _dailyReminderMapper= dailyReminderMapper;
-
+            _dailyReminderMapper = dailyReminderMapper;
+            _weeklyReminderRepository = weeklyReminderRepository;
         }
 
         //[HttpGet("GetDailyReminders")]
@@ -50,7 +52,6 @@ namespace FoodZOAI.UserManagement.Controllers
                 return StatusCode(500, "An error occurred while retrieving the GetDaily Reminders.");
             }
         }
-
 
 
     }

@@ -7,5 +7,7 @@ namespace FoodZOAI.UserManagement.Configuration.Contracts
     {
         DailyReminder MapToDomain(DailyReminderDTO dto);
         List<DailyReminder> ListMapToDomain(List<DailyReminderDTO> dtoList);
+        DailyReminderDTO MapToDTO(DailyReminder domain);
+        List<DailyReminder> ListMapToDTO(List<DailyReminder> domains);
     }
 }

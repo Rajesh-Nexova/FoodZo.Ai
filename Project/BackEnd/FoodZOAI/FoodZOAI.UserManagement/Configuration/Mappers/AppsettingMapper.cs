@@ -4,7 +4,7 @@ using FoodZOAI.UserManagement.Models;
 
 namespace FoodZOAI.UserManagement.Configuration.Mappers
 {
-    public class AppsettingMapper:IAppsetting
+    public class AppsettingMapper : IAppsetting
     {
         public AppsettingDTO Map(Appsetting source)
         {

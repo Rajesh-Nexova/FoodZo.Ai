@@ -1,7 +1,4 @@
-﻿using FoodZOAI.UserManagement.Configuration.Contracts;
-using FoodZOAI.UserManagement.Contracts;
-using FoodZOAI.UserManagement.Mappers;
-using Microsoft.AspNetCore.Http;
+﻿using FoodZOAI.UserManagement.Contracts;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoodZOAI.UserManagement.Controllers

@@ -5,7 +5,7 @@ namespace FoodZOAI.UserManagement.Contracts
 {
     public interface IEmailSettingRepository
     {
-        Task<EmailSettingDTO?> GetActiveEmailSettingAsync();
+        //Task<EmailSettingDTO?> GetActiveEmailSettingAsync();
         Task<IEnumerable<EmailSetting>> GetAllAsync();
         Task<EmailSetting?> GetByIdAsync(int id);
         Task AddAsync(EmailSetting emailSetting);

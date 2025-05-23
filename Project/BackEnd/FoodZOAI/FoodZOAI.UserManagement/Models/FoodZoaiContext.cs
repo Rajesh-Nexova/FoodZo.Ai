@@ -26,14 +26,24 @@ public partial class FoodZoaiContext : DbContext
     public virtual DbSet<RolePermission> RolePermissions { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
+    public virtual DbSet<EmailSetting> EmailSettings { get; set; }
+    public object EmailSettings { get; internal set; }
+
+    public virtual DbSet<EmailTemplate> EmailTemplates { get; set; }
 
     public virtual DbSet<UserPermission> UserPermissions { get; set; }
 
+    public virtual DbSet<ReminderUser> ReminderUsers { get; set; }
+
+    public virtual DbSet<UserNotification> UserNotifications { get; set; }
+
     public virtual DbSet<UserProfile> UserProfiles { get; set; }
+   
 
     public virtual DbSet<UserRole> UserRoles { get; set; }
 
     public virtual DbSet<UserSession> UserSessions { get; set; }
+    
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -71,6 +81,55 @@ public partial class FoodZoaiContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("value");
+        });
+
+        modelBuilder.Entity<EmailSetting>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_EmailSettings_Id");
+
+            entity.Property(e => e.CreatedByUser)
+                .HasMaxLength(32)
+                .IsUnicode(false);
+            entity.Property(e => e.DeletedByUser)
+                .HasMaxLength(32)
+                .IsUnicode(false);
+            entity.Property(e => e.Host)
+                .HasMaxLength(32)
+                .IsUnicode(false);
+            entity.Property(e => e.IsEnableSsl).HasColumnName("IsEnableSSL");
+            entity.Property(e => e.ModifiedByUser)
+                .HasMaxLength(32)
+                .IsUnicode(false);
+            entity.Property(e => e.Password)
+                .HasMaxLength(128)
+                .IsUnicode(false);
+            entity.Property(e => e.UserName)
+                .HasMaxLength(32)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<EmailTemplate>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_EmailTemplate_Id");
+
+            entity.ToTable("EmailTemplate");
+
+            entity.Property(e => e.Body).IsUnicode(false);
+            entity.Property(e => e.CreatedByUser)
+                .HasMaxLength(32)
+                .IsUnicode(false);
+            entity.Property(e => e.DeletedByUser)
+                .HasMaxLength(32)
+                .IsUnicode(false);
+            entity.Property(e => e.ModifiedByUser)
+                .HasMaxLength(32)
+                .IsUnicode(false);
+            entity.Property(e => e.Name)
+                .HasMaxLength(32)
+                .IsUnicode(false);
+            entity.Property(e => e.Subject)
+                .HasMaxLength(128)
+                .IsUnicode(false);
         });
 
         modelBuilder.Entity<Organization>(entity =>
