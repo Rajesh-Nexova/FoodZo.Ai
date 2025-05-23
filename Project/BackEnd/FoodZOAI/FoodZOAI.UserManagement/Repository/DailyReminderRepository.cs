@@ -13,41 +13,30 @@ namespace FoodZOAI.UserManagement.Repositories
         {
             _context = context;
         }
-
-        public async Task<DailyReminder> GetByIdAsync(int id)
+        public Task AddAsync(DailyReminder entity)
         {
-            return await _context.DailyReminders
-                                 .Include(d => d.Reminder) // optional eager loading
-                                 .FirstOrDefaultAsync(d => d.Id == id);
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteAsync(int id)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<IEnumerable<DailyReminder>> GetAllAsync()
         {
-            return await _context.DailyReminders
-                                 .Include(d => d.Reminder)
-                                 .ToListAsync();
+
+            return await _context.DailyReminders.ToListAsync();
         }
 
-        public async Task AddAsync(DailyReminder entity)
+        public  async Task<DailyReminder> GetByIdAsync(int id)
         {
-            await _context.DailyReminders.AddAsync(entity);
-            await _context.SaveChangesAsync();
+            return await _context.DailyReminders.FindAsync(id);
         }
 
-        public async Task UpdateAsync(DailyReminder entity)
+        public Task UpdateAsync(DailyReminder entity)
         {
-            _context.DailyReminders.Update(entity);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task DeleteAsync(int id)
-        {
-            var entity = await _context.DailyReminders.FindAsync(id);
-            if (entity != null)
-            {
-                _context.DailyReminders.Remove(entity);
-                await _context.SaveChangesAsync();
-            }
+            throw new NotImplementedException();
         }
     }
 }

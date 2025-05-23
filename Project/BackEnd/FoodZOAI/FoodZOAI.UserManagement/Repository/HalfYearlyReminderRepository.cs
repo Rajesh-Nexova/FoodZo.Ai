@@ -16,16 +16,12 @@ namespace FoodZOAI.UserManagement.Repositories
 
         public async Task<HalfYearlyReminder> GetByIdAsync(int id)
         {
-            return await _context.HalfYearlyReminders
-                                 .Include(h => h.Reminder) // optional: include related Reminder if needed
-                                 .FirstOrDefaultAsync(h => h.Id == id);
+            return await _context.HalfYearlyReminders.FindAsync(id);
         }
 
         public async Task<IEnumerable<HalfYearlyReminder>> GetAllAsync()
         {
-            return await _context.HalfYearlyReminders
-                                 .Include(h => h.Reminder) // optional
-                                 .ToListAsync();
+            return await _context.HalfYearlyReminders.ToListAsync();
         }
 
         public async Task AddAsync(HalfYearlyReminder entity)

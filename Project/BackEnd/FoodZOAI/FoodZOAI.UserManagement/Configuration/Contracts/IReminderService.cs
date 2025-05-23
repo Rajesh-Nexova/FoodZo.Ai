@@ -1,18 +1,13 @@
-﻿using FoodZOAI.UserManagement.Models;
-using FoodZOAI.UserManagement.DTOs;
+﻿using FoodZOAI.UserManagement.DTOs;
+using FoodZOAI.UserManagement.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace FoodZOAI.UserManagement.Configuration.Contracts
 {
-    public interface IReminderService : IMapperService<Reminder, ReminderDTO>
+    public interface IReminderService
     {
-
-        Reminder MapToDomain(ReminderDTO dto);
-        List<Reminder> ListMapToDomain(List<ReminderDTO> dtoList);
-        ReminderDTO MapToDTO(Reminder domain);
-        List<ReminderDTO> ListMapToDTO(List<Reminder> domains);
+        Task<IEnumerable<ReminderDTO>> GetAllAsync();
+        Task<ReminderDTO?> GetByIdAsync(int id);
     }
-    
-
 }
-

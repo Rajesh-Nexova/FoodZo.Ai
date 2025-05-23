@@ -1,4 +1,6 @@
 ﻿using FoodZOAI.UserManagement.Contracts;
+using FoodZOAI.UserManagement.Mappers.Interfaces;
+using FoodZOAI.UserManagement.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoodZOAI.UserManagement.Controllers
@@ -7,29 +9,34 @@ namespace FoodZOAI.UserManagement.Controllers
     [ApiController]
     public class HalfYearlyReminderController : ControllerBase
     {
-        private readonly IHalfYearlyReminderRepository _halfYearlyReminderRepository;
-        private readonly IHalfYearlyReminderMapper _halfYearlyReminderMapper;
-        public HalfYearlyReminderController(IHalfYearlyReminderRepository halfYearlyReminderRepository, IHalfYearlyReminderMapper halfYearlyReminderMapper)
-        {
-            _halfYearlyReminderRepository = halfYearlyReminderRepository;
-            _halfYearlyReminderMapper = halfYearlyReminderMapper;
+        private readonly IHalfYearlyReminderRepository _repository;
+        private readonly IHalfYearlyReminderMapper _mapper;
 
+        public HalfYearlyReminderController(
+            IHalfYearlyReminderRepository repository,
+            IHalfYearlyReminderMapper mapper)
+        {
+            _repository = repository;
+            _mapper = mapper;
         }
 
-
-        [HttpGet("HalfYearlyReminder/{id}")]
-        public async Task<IActionResult> GetHalfYearlyReminders(int id)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetHalfYearlyReminderById(int id)
         {
             try
             {
-                var settings = await _halfYearlyReminderRepository.GetAllAsync();
-                var result = _halfYearlyReminderMapper.MapList(settings.ToList());
-                return Ok(result);
+                var entity = await _repository.GetByIdAsync(id);
+                if (entity == null)
+                    return NotFound($"HalfYearlyReminder with id {id} not found.");
+
+                var dto = _mapper.Map(entity);
+                return Ok(dto);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(500, "An error occurred while retrieving the HalfYearlyReminder");
+                return StatusCode(500, $"Server error: {ex.Message}");
             }
         }
+
     }
 }

@@ -21,13 +21,17 @@ public partial class UserSession
 
     public string? Location { get; set; }
 
-    public bool? IsActive { get; set; }
-
     public DateTime ExpiresAt { get; set; }
 
     public DateTime? LastActivityAt { get; set; }
 
     public DateTime? CreatedAt { get; set; }
+
+    public DateTime? UpdatedAt { get; set; }
+
+    public DateTime? DeletedAt { get; set; }
+
+    public bool IsActive { get; set; }
 
     public virtual User User { get; set; } = null!;
 }

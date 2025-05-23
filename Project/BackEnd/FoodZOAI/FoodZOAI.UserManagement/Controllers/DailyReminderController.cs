@@ -1,5 +1,4 @@
 ﻿using FoodZOAI.UserManagement.Configuration.Contracts;
-using FoodZOAI.UserManagement.Contracts;
 using FoodZOAI.UserManagement.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,7 +15,7 @@ namespace FoodZOAI.UserManagement.Controllers
         public DailyReminderController(IDailyReminderRepository dailyReminderRepository, IDailyReminderMapper dailyReminderMapper, IDailyReminderMapper weeklyReminderRepository)
         {
             _dailyReminderRepository = dailyReminderRepository;
-            _dailyReminderMapper = dailyReminderMapper;
+            _dailyReminderMapper= dailyReminderMapper;
             _weeklyReminderRepository = weeklyReminderRepository;
         }
 
