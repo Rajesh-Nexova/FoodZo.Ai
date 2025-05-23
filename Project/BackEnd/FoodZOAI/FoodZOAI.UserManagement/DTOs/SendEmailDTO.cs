@@ -10,5 +10,8 @@
         public string Body { get; set; }
         public bool IsHtml { get; set; } = true;
         public string? FromName { get; set; }
+
+        public List<IFormFile>? Attachments { get; set; }
+        public int? TemplateId { get; set; }
     }
 }

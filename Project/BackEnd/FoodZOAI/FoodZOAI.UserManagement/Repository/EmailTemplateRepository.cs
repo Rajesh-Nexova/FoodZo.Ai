@@ -1,4 +1,5 @@
 ﻿using FoodZOAI.UserManagement.Contracts;
+using FoodZOAI.UserManagement.DTOs;
 using FoodZOAI.UserManagement.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -41,6 +42,7 @@ namespace FoodZOAI.UserManagement.Repository
         {
             return await _Context.EmailTemplates.FindAsync(id);
         }
+
         
 
         public  async Task UpdateAsync(EmailTemplate EmailTemplates)
@@ -49,9 +51,21 @@ namespace FoodZOAI.UserManagement.Repository
             await _Context.SaveChangesAsync();
         }
 
-        
-           
+        public  async Task<EmailTemplateDTO?> GetTemplateByIdAsync(int id)
+        {
+            var template = await _Context.EmailTemplates.FirstOrDefaultAsync(t => t.Id == id && t.IsActive);
+            return template == null ? null : new EmailTemplateDTO
+            {
+                Id = template.Id,
+                Name = template.Name,
+                Subject = template.Subject,
+                Body = template.Body,
+                IsActive = template.IsActive,
+                CreatedByUser = template.CreatedByUser
+            };
+        }
 
-        
+
+
     }
 }

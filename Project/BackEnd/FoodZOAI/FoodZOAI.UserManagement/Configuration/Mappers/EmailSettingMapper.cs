@@ -17,6 +17,7 @@ namespace FoodZOAI.UserManagement.Configuration.Mappers
             {
                 Id = source.Id,
                 Host = source.Host,
+                Port = source.Port,
                 UserName = source.UserName,
                 Password = source.Password,
                 IsEnableSsl = source.IsEnableSsl,
@@ -42,6 +43,7 @@ namespace FoodZOAI.UserManagement.Configuration.Mappers
             {
                 
                 Host = dto.Host,
+                Port = dto.Port,
                 UserName = dto.UserName,
                 Password = dto.Password,
                 IsEnableSsl = dto.IsEnableSsl,
