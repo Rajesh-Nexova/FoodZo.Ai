@@ -7,6 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="FoodZOAI.UserMangementunitTests\**" />
+    <Compile Remove="UserManagement.Tests\**" />
+    <Content Remove="FoodZOAI.UserMangementunitTests\**" />
+    <Content Remove="UserManagement.Tests\**" />
+    <EmbeddedResource Remove="FoodZOAI.UserMangementunitTests\**" />
+    <EmbeddedResource Remove="UserManagement.Tests\**" />
+    <None Remove="FoodZOAI.UserMangementunitTests\**" />
+    <None Remove="UserManagement.Tests\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Argon" Version="0.30.0" />
     <PackageReference Include="FluentValidation" Version="12.0.0" />
     <PackageReference Include="Konscious.Security.Cryptography.Argon2" Version="1.3.1" />

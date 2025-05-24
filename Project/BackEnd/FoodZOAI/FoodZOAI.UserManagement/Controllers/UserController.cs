@@ -19,16 +19,16 @@ namespace FoodZOAI.UserManagement.Controllers
     {
         private readonly IUserRepository _userRepository;
         private readonly IUserProfileRepository _userProfileRepository;
-        private readonly IMapperService<User, UserDTO> _userMapper;
-        private readonly IMapperService<UserProfile, UserProfileDTO> _userProfileMapper;
+        private readonly IMapperServices<User, UserDTO> _userMapper;
+        private readonly IMapperServices<UserProfile, UserProfileDTO> _userProfileMapper;
         private readonly IFileService _fileService;
         private readonly ILogger<UserController> _logger;
 
         public UserController(
             IUserRepository userRepository,
             IUserProfileRepository userProfileRepository,
-            IMapperService<User, UserDTO> userMapper,
-            IMapperService<UserProfile, UserProfileDTO> userProfileMapper,
+            IMapperServices<User, UserDTO> userMapper,
+            IMapperServices<UserProfile, UserProfileDTO> userProfileMapper,
             IFileService fileService,
             ILogger<UserController> logger)
         {
@@ -238,7 +238,7 @@ namespace FoodZOAI.UserManagement.Controllers
                 return NotFound("User profile not found.");
             }
 
-            var updatedProfile = _userProfileMapper.MapToEntity(profileDto, profile);
+            var updatedProfile = _userProfileMapper.MapToDomain(profileDto, profile);
             await _userProfileRepository.UpdateAsync(updatedProfile);
 
             _logger.LogInformation("UpdateUserProfile succeeded for ProfileId: {Id}", id);

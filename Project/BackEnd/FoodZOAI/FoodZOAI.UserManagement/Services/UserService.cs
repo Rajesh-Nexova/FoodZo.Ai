@@ -1,4 +1,5 @@
 ﻿using FoodZOAI.UserManagement.Models;
+using FoodZOAI.UserManagement.Repository;
 
 public class UserService : IUserService
 {

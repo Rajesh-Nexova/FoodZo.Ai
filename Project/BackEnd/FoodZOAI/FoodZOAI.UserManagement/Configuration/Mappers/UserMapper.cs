@@ -7,10 +7,18 @@ using FoodZOAI.UserManagement.Models;
 
 namespace FoodZOAI.UserManagement.Configuration.Mappers
 {
-    public class UserMapper : IMapperService<User, UserDTO>
+    public class UserMapper : IUserMapper
     {
+        public List<User> ListMapToDomain(List<UserDTO> dtoList)
+        {
+            return dtoList?.Select(MapToDomain).ToList() ?? new List<User>();
+        }
+
         public UserDTO Map(User source)
         {
+            if (source == null)
+                return new UserDTO();
+
             return new UserDTO
             {
                 Id = source.Id,
@@ -35,30 +43,26 @@ namespace FoodZOAI.UserManagement.Configuration.Mappers
                 CreatedAt = source.CreatedAt ?? DateTime.UtcNow,
                 UpdatedAt = source.UpdatedAt,
                 DeletedAt = source.DeletedAt
+
             };
         }
 
         public List<UserDTO> MapList(List<User> source)
         {
-            return source.Select(Map).ToList();
+            return source?.Select(Map).ToList() ?? new List<UserDTO>();
         }
 
-        public UserDTO MapToDTO(User entity)
+        public User MapToDomain(UserDTO dto)
         {
-            throw new NotImplementedException();
-        }
+            
+            if (dto == null)
+                return new User();
 
-        public void MapToDTOList(List<User> users)
-        {
-            throw new NotImplementedException();
-        }
-
-        public User MapToEntity(UserDTO dto)
-        {
             return new User
             {
+
                 Id = dto.Id,
-                OrganizationId = dto.OrganizationId,
+                OrganizationId = dto.OrganizationId ,
                 Username = dto.Username,
                 Email = dto.Email,
                 EmailVerifiedAt = dto.EmailVerifiedAt,
@@ -71,41 +75,16 @@ namespace FoodZOAI.UserManagement.Configuration.Mappers
                 Status = dto.Status,
                 LastLoginAt = dto.LastLoginAt,
                 PasswordChangedAt = dto.PasswordChangedAt,
-                FailedLoginAttempts = dto.FailedLoginAttempts,
+                FailedLoginAttempts = dto.FailedLoginAttempts ,
                 LockedUntil = dto.LockedUntil,
-                TwoFactorEnabled = dto.TwoFactorEnabled,
+                TwoFactorEnabled = dto.TwoFactorEnabled ,
                 TwoFactorSecret = dto.TwoFactorSecret,
                 CreatedBy = dto.CreatedBy,
-                CreatedAt = dto.CreatedAt,
+                CreatedAt = dto.CreatedAt ,
                 UpdatedAt = dto.UpdatedAt,
                 DeletedAt = dto.DeletedAt
             };
         }
-
-        public User MapToEntity(UserDTO dto, User existingEntity)
-        {
-            existingEntity.OrganizationId = dto.OrganizationId;
-            existingEntity.Username = dto.Username;
-            existingEntity.Email = dto.Email;
-            existingEntity.EmailVerifiedAt = dto.EmailVerifiedAt;
-            existingEntity.PasswordHash = dto.PasswordHash;
-            existingEntity.Salt = dto.Salt;
-            existingEntity.FirstName = dto.FirstName;
-            existingEntity.LastName = dto.LastName;
-            existingEntity.Phone = dto.Phone;
-            existingEntity.AvatarUrl = dto.AvatarUrl;
-            existingEntity.Status = dto.Status;
-            existingEntity.LastLoginAt = dto.LastLoginAt;
-            existingEntity.PasswordChangedAt = dto.PasswordChangedAt;
-            existingEntity.FailedLoginAttempts = dto.FailedLoginAttempts;
-            existingEntity.LockedUntil = dto.LockedUntil;
-            existingEntity.TwoFactorEnabled = dto.TwoFactorEnabled;
-            existingEntity.TwoFactorSecret = dto.TwoFactorSecret;
-            existingEntity.CreatedBy = dto.CreatedBy;
-            existingEntity.UpdatedAt = DateTime.UtcNow;
-
-            return existingEntity;
-        }
-
     }
-}
+    }
+

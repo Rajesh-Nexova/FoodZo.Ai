@@ -47,7 +47,7 @@ namespace FoodZOAI.UserManagement.Controllers
                 if (setting == null)
                     return NotFound("Email Templates not found.");
 
-                var result = _emailTemplateMapper.MapToDTO(setting);
+                var result = _emailTemplateMapper.Map(setting);
                 return Ok(result);
             }
             catch (Exception)
@@ -95,7 +95,7 @@ namespace FoodZOAI.UserManagement.Controllers
 
                 await _emailTemplateRepository.UpdateAsync(existing);
 
-                var result = _emailTemplateMapper.MapToDTO(existing);
+                var result = _emailTemplateMapper.Map(existing);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -120,7 +120,7 @@ namespace FoodZOAI.UserManagement.Controllers
 
                 await _emailTemplateRepository.AddAsync(template);
 
-                var resultDto = _emailTemplateMapper.MapToDTO(template);
+                var resultDto = _emailTemplateMapper.Map(template);
                 return CreatedAtAction(nameof(GetEmailTemplateById), new { id = template.Id }, resultDto);
             }
             catch (Exception ex)

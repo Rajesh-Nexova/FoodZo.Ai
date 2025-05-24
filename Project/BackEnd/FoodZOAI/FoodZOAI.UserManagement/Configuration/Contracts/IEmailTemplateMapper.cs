@@ -3,12 +3,11 @@ using FoodZOAI.UserManagement.Models;
 
 namespace FoodZOAI.UserManagement.Configuration.Contracts
 {
-    public interface IEmailTemplateMapper : IMapperService<EmailTemplate, EmailTemplateDTO>
+    public interface IEmailTemplateMapper : IMapperServices<EmailTemplate, EmailTemplateDTO>
     {
         EmailTemplate MapToDomain(EmailTemplateDTO dto);
         List<EmailTemplate> ListMapToDomain(List<EmailTemplateDTO> domainDtos);
 
-        EmailTemplateDTO MapToDTO(EmailTemplate domain);
-        List<EmailTemplateDTO> ListMapToDTO(List<EmailTemplate> domains);
+       
     }
 }
