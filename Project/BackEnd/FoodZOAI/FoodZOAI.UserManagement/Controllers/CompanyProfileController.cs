@@ -30,7 +30,7 @@ namespace FoodZOAI.UserManagement.Controllers
                 if (organisation == null)
                     return NotFound("Organization ID Not Found");
 
-                var result = _organizationMapper.MapToDTO(organisation);
+                var result = _organizationMapper.Map(organisation);
 
                 return Ok(result);
             }
@@ -66,7 +66,7 @@ namespace FoodZOAI.UserManagement.Controllers
 
                 await _organizationRepository.UpdateAsync(existing);
 
-                var result = _organizationMapper.MapToDTO(existing);
+                var result = _organizationMapper.Map(existing);
 
                 return Ok(result);
             }

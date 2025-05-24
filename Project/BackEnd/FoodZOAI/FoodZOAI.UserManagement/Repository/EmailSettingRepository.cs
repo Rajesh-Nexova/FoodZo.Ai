@@ -23,10 +23,6 @@ namespace FoodZOAI.UserManagement.Repository
             return await _Context.EmailSettings.FirstOrDefaultAsync(e => e.IsDefault && e.IsActive);
         }
 
-        
-
-
-
         public async Task AddAsync(EmailSetting emailSetting)
         {
             _Context.EmailSettings.Add(emailSetting);

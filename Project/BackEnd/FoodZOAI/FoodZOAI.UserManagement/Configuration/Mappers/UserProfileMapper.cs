@@ -6,8 +6,13 @@ using FoodZOAI.UserManagement.Models;
 
 namespace FoodZOAI.UserManagement.Configuration.Mappers
 {
-    public class UserProfileMapper : IMapperService<UserProfile, UserProfileDTO>
+    public class UserProfileMapper : IUserProfileMapper
     {
+        public List<UserProfile> ListMapToDomain(List<UserProfileDTO> dtoList)
+        {
+            return dtoList?.Select(MapToDomain).ToList() ?? new List<UserProfile>();
+        }
+
         public UserProfileDTO Map(UserProfile source)
         {
             return new UserProfileDTO
@@ -37,17 +42,13 @@ namespace FoodZOAI.UserManagement.Configuration.Mappers
             return source.Select(Map).ToList();
         }
 
-        public UserDTO MapToDTO(User entity)
-        {
-            throw new NotImplementedException();
-        }
+       
 
-        public void MapToDTOList(List<User> users)
-        {
-            throw new NotImplementedException();
-        }
+        
 
-        public UserProfile MapToEntity(UserProfileDTO dto)
+        
+
+        public UserProfile MapToDomain(UserProfileDTO dto)
         {
             return new UserProfile
             {
@@ -71,25 +72,6 @@ namespace FoodZOAI.UserManagement.Configuration.Mappers
             };
         }
 
-        public UserProfile MapToEntity(UserProfileDTO dto, UserProfile existingEntity)
-        {
-            existingEntity.UserId = dto.UserId;
-            existingEntity.Bio = dto.Bio;
-            existingEntity.DateOfBirth = dto.DateOfBirth;
-            existingEntity.Gender = dto.Gender;
-            existingEntity.Address = dto.Address;
-            existingEntity.City = dto.City;
-            existingEntity.StateProvince = dto.StateProvince;
-            existingEntity.PostalCode = dto.PostalCode;
-            existingEntity.Country = dto.Country;
-            existingEntity.Timezone = dto.Timezone;
-            existingEntity.Language = dto.Language;
-            existingEntity.NotificationPreferences = dto.NotificationPreferences;
-            existingEntity.PrivacySettings = dto.PrivacySettings;
-            existingEntity.CustomFields = dto.CustomFields;
-            existingEntity.UpdatedAt = DateTime.UtcNow;
-
-            return existingEntity;
-        }
+        
     }
 }

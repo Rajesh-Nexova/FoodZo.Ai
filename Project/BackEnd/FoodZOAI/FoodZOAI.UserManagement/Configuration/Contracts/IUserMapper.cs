@@ -3,10 +3,9 @@ using FoodZOAI.UserManagement.DTOs;
 
 namespace FoodZOAI.UserManagement.Configuration.Contracts
 {
-    public interface IUserMapper
+    public interface IUserMapper:IMapperServices<User, UserDTO>
     {
-        UserDTO MapToDTO(User user);
-        User MapToEntity(UserDTO userDto);
-        User MapToEntity(UserDTO userDto, User existingUser); // For updates
+        User MapToDomain(UserDTO dto);
+        List<User> ListMapToDomain(List<UserDTO> dtoList);
     }
 }
