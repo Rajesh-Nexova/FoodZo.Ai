@@ -5,6 +5,7 @@ namespace FoodZOAI.UserManagement.Configuration.Contracts
 {
     public interface IAppsetting:IMapperServices<Appsetting,AppsettingDTO>
     {
-
+            Appsetting MapToDomain(AppsettingDTO dto);
+             List<Appsetting> ListMapToDomain(List<AppsettingDTO> dtoList);
     }
 }
