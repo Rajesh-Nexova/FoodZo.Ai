@@ -26,34 +26,30 @@ namespace FoodZOAI.UserManagement.Configuration.Mappers
             return domainDtos.Select(MapToDomain).ToList();
         }
 
-        public EmailTemplateDTO MapToDTO(EmailTemplate domain)
-        {
-            return new EmailTemplateDTO
-            {
-                Id = domain.Id,
-                Name = domain.Name,
-                Subject = domain.Subject,
-                Body = domain.Body,
-                IsActive = domain.IsActive,
-                CreatedByUser = domain.CreatedByUser,
-                ModifiedByUser = domain.ModifiedByUser,
-                DeletedByUser = domain.DeletedByUser
-            };
-        }
+        
 
-        public List<EmailTemplateDTO> ListMapToDTO(List<EmailTemplate> domains)
-        {
-            return domains.Select(MapToDTO).ToList();
-        }
+        
 
         public EmailTemplateDTO Map(EmailTemplate source)
         {
-            return MapToDTO(source);
+            if (source == null)
+                return new EmailTemplateDTO();
+
+            return new EmailTemplateDTO
+            {
+                Name = source.Name,
+                Subject = source.Subject,
+                Body = source.Body,
+                IsActive = source.IsActive,
+                CreatedByUser = source.CreatedByUser,
+                ModifiedByUser = source.ModifiedByUser,
+                DeletedByUser = source.DeletedByUser
+            };
         }
 
         public List<EmailTemplateDTO> MapList(List<EmailTemplate> source)
         {
-            return ListMapToDTO(source);
+            return source?.Select(Map).ToList() ?? new List<EmailTemplateDTO>();
         }
     }
 }

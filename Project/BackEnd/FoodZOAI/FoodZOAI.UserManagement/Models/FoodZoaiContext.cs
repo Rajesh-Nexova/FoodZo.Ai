@@ -26,8 +26,7 @@ public partial class FoodZoaiContext : DbContext
     public virtual DbSet<RolePermission> RolePermissions { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
-    public virtual DbSet<EmailSetting> EmailSettings { get; set; }
-    public object EmailSettings { get; internal set; }
+
 
     public virtual DbSet<EmailTemplate> EmailTemplates { get; set; }
 

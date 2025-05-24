@@ -19,8 +19,8 @@ namespace UserTesting.Tests
     {
         private readonly Mock<IUserRepository> _userRepositoryMock;
         private readonly Mock<IUserProfileRepository> _userProfileRepositoryMock;
-        private readonly Mock<IMapperService<User, UserDTO>> _userMapperMock;
-        private readonly Mock<IMapperService<UserProfile, UserProfileDTO>> _profileMapperMock;
+        private readonly Mock<IMapperServices<User, UserDTO>> _userMapperMock;
+        private readonly Mock<IMapperServices<UserProfile, UserProfileDTO>> _profileMapperMock;
         private readonly Mock<IFileService> _fileServiceMock;
         private readonly UserController _controller;
 

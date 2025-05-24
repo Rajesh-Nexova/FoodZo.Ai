@@ -47,7 +47,7 @@ namespace FoodZOAI.UserManagement.Controllers
                 if (setting == null)
                     return NotFound("Email setting not found.");
 
-                var result = _emailSettingMapper.MapToDTO(setting);
+                var result = _emailSettingMapper.Map(setting);
                 return Ok(result);
             }
             catch (Exception)
@@ -90,7 +90,7 @@ namespace FoodZOAI.UserManagement.Controllers
 
                 await _emailSettingRepository.AddAsync(template);
 
-                var resultDto = _emailSettingMapper.MapToDTO(template);
+                var resultDto = _emailSettingMapper.Map(template);
                 return CreatedAtAction(nameof(GetEmailSMTPSettingById), new { id = template.Id }, resultDto);
             }
             catch (Exception ex)
@@ -122,7 +122,7 @@ namespace FoodZOAI.UserManagement.Controllers
 
                 await _emailSettingRepository.UpdateAsync(existing);
 
-                var result = _emailSettingMapper.MapToDTO(existing);
+                var result = _emailSettingMapper.Map(existing);
                 return Ok(result);
             }
             catch (Exception ex)

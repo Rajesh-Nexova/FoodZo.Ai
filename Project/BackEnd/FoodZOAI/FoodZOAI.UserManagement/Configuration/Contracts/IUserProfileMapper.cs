@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace FoodZOAI.UserManagement.Configuration.Contracts
 {
-    public interface IUserProfileMapper
+    public interface IUserProfileMapper:IMapperServices<UserProfile,UserProfileDTO>
     {
+        UserProfile MapToDomain(UserProfileDTO dto);
+        List<UserProfile> ListMapToDomain(List<UserProfileDTO> dtoList);
     }
 }

@@ -37,31 +37,35 @@ namespace FoodZOAI.UserManagement.Configuration.Mappers
 
        
 
-        public OrganizationDTO MapToDTO(Organization domain)
-        {
-            if (domain == null)
-                return new OrganizationDTO();
+        
 
-            return new OrganizationDTO
+        
+
+        public Organization MapToDomain(OrganizationDTO dto)
+        {
+            if (dto == null)
+                return new Organization();
+
+            return new Organization
             {
-                Id = domain.Id,
-                Name = domain.Name,
-                Slug = domain.Slug,
-                Description = domain.Description,
-                Website = domain.Website,
-                LogoUrl = domain.LogoUrl,
-                SubscriptionPlan = domain.SubscriptionPlan,
-                MaxUsers = domain.MaxUsers,
-                Status = domain.Status,
-                CreatedAt = domain.CreatedAt,
-                UpdatedAt = domain.UpdatedAt,
+                Id = dto.Id,
+                Name = dto.Name,
+                Slug = dto.Slug,
+                Description = dto.Description,
+                Website = dto.Website,
+                LogoUrl = dto.LogoUrl,
+                SubscriptionPlan = dto.SubscriptionPlan,
+                MaxUsers = dto.MaxUsers,
+                Status = dto.Status,
+                CreatedAt = dto.CreatedAt,
+                UpdatedAt = dto.UpdatedAt,
 
             };
         }
 
-        public List<OrganizationDTO> MapToDTO(List<Organization> domains)
+        public List<Organization> MapToDomain(List<OrganizationDTO> domainDtos)
         {
-            return domains?.Select(MapToDTO).ToList() ?? new List<OrganizationDTO>();
+            return domainDtos?.Select(MapToDomain).ToList() ?? new List<Organization>();
         }
     }
 }

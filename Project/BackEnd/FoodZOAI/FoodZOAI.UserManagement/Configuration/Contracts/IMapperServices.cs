@@ -1,4 +1,8 @@
-﻿namespace FoodZOAI.UserManagement.Configuration.Contracts
+﻿using System.Collections.Generic;
+using FoodZOAI.UserManagement.DTOs;
+using FoodZOAI.UserManagement.Models;
+
+namespace FoodZOAI.UserManagement.Configuration.Contracts
 {
     public interface IMapperServices<TSource, TDestination>
     {

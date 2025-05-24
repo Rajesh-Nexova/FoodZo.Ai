@@ -6,7 +6,10 @@ namespace FoodZOAI.UserManagement.Configuration.Mappers
 {
     public class EmailSettingMapper : IEmailSettingMapper
     {
-        
+        public List<EmailSetting> ListMapToDomain(List<EmailSettingDTO> dtoList)
+        {
+            return dtoList?.Select(MapToDomain).ToList() ?? new List<EmailSetting>();
+        }
 
         public EmailSettingDTO Map(EmailSetting source)
         {
@@ -17,7 +20,6 @@ namespace FoodZOAI.UserManagement.Configuration.Mappers
             {
                 Id = source.Id,
                 Host = source.Host,
-                Port = source.Port,
                 UserName = source.UserName,
                 Password = source.Password,
                 IsEnableSsl = source.IsEnableSsl,
@@ -28,7 +30,7 @@ namespace FoodZOAI.UserManagement.Configuration.Mappers
                 DeletedByUser = source.DeletedByUser
             };
         }
-        
+
         public List<EmailSettingDTO> MapList(List<EmailSetting> source)
         {
             return source?.Select(Map).ToList() ?? new List<EmailSettingDTO>();
@@ -41,9 +43,8 @@ namespace FoodZOAI.UserManagement.Configuration.Mappers
 
             return new EmailSetting
             {
-                
+
                 Host = dto.Host,
-                Port = dto.Port,
                 UserName = dto.UserName,
                 Password = dto.Password,
                 IsEnableSsl = dto.IsEnableSsl,
@@ -51,38 +52,8 @@ namespace FoodZOAI.UserManagement.Configuration.Mappers
                 IsActive = dto.IsActive,
                 CreatedByUser = dto.CreatedByUser,
                 ModifiedByUser = dto.ModifiedByUser,
-                DeletedByUser =dto.DeletedByUser
+                DeletedByUser = dto.DeletedByUser
             };
-        }
-
-        public List<EmailSetting> ListMapToDomain(List<EmailSettingDTO> domainDtos)
-        {
-            return domainDtos?.Select(MapToDomain).ToList() ?? new List<EmailSetting>();
-        }
-
-        public EmailSettingDTO MapToDTO(EmailSetting domain)
-        {
-            if (domain == null)
-                return new EmailSettingDTO();
-
-            return new EmailSettingDTO
-            {
-                Id = domain.Id,
-                Host = domain.Host,
-                UserName = domain.UserName,
-                Password = domain.Password,
-                IsEnableSsl = domain.IsEnableSsl,
-                IsDefault = domain.IsDefault,
-                IsActive = domain.IsActive,
-                CreatedByUser = domain.CreatedByUser,
-                ModifiedByUser = domain.ModifiedByUser,
-                DeletedByUser = domain.DeletedByUser
-            };
-        }
-
-        public List<EmailSettingDTO> ListMapToDTO(List<EmailSetting> domains)
-        {
-            return domains?.Select(MapToDTO).ToList() ?? new List<EmailSettingDTO>();
         }
     }
 }
