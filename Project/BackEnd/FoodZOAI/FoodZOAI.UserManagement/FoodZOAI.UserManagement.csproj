@@ -119,7 +119,12 @@
 
   <ItemGroup>
     <Folder Include="Configuration\Validation\" />
+    <Folder Include="Helpers\" />
     <Folder Include="Validators\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FoodZOAI.FileSystem\FoodZOAI.FileSystem.csproj" />
   </ItemGroup>
 
 </Project>

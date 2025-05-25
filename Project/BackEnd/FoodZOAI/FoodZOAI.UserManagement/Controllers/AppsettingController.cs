@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FoodZOAI.UserManagement.Controllers
 {
     /// <summary>
-    /// Santhosh Write TryCatch and Implemetn BaseController
+    /// Santhosh Write TryCatch 
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
@@ -21,7 +21,7 @@ namespace FoodZOAI.UserManagement.Controllers
             _logger = logger;
         }
 
-        [HttpGet("GetAllActiveSettings")] 
+        [HttpGet("GetAllActiveSetting")] 
         public async Task<IActionResult> GetAll()
         {
             var list = await _appsettingsService.GetAllAppsettingsAsync();

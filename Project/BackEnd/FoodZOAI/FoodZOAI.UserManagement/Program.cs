@@ -73,6 +73,8 @@ builder.Services.AddMappers();
 builder.Services.AddConfigServices();
 //Dependency Injection for Repository
 builder.Services.AddRepositoryServices();
+//Dependency Injection for FileStorage
+builder.Services.AddFileStorage(builder.Configuration);
 
 
 // Add CORS policy
