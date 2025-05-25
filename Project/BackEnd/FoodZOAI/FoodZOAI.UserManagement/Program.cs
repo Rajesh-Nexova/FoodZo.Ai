@@ -1,15 +1,42 @@
 
+using FoodZOAI.UserManagement.Configuration;
 using FoodZOAI.UserManagement.Configuration.Contracts;
 using FoodZOAI.UserManagement.Configuration.Mappers;
 using FoodZOAI.UserManagement.Contracts;
 using FoodZOAI.UserManagement.Models;
 using FoodZOAI.UserManagement.Repository;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//builder.Services.AddDbContext<FoodZoaiContext>(options =>
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+// Database Configuration
 builder.Services.AddDbContext<FoodZoaiContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+	// For development, use SQL Server LocalDB or In-Memory database
+	if (builder.Environment.IsDevelopment())
+	{
+		
+
+		// Option 1: SQL Server (uncomment to use)
+		 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+	}
+	else
+	{
+		// Production database configuration
+		options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+	}
+
+	// Enable sensitive data logging in development
+	if (builder.Environment.IsDevelopment())
+	{
+		options.EnableSensitiveDataLogging();
+	}
+});
+
+
 
 
 // Add services to the container.
@@ -17,10 +44,54 @@ builder.Services.AddDbContext<FoodZoaiContext>(options =>
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+	c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+	{
+		Title = "User Management API",
+		Version = "v1",
+		Description = "A comprehensive API for managing User and Role Management",
+		Contact = new Microsoft.OpenApi.Models.OpenApiContact
+		{
+			Name = "FoodZOAI Development Team",
+			Email = "prady.r@nexovaglobaltechnology.com"
+		}
+	});
 
-builder.Services.AddScoped<IAppsettingRepository, AppsettingRepository>();
-builder.Services.AddScoped<IAppsetting, AppsettingMapper>();
+	// Include XML comments
+	var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+	var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+	if (File.Exists(xmlPath))
+	{
+		c.IncludeXmlComments(xmlPath);
+	}
+});
+
+//Dependency Injection for Mappers
+builder.Services.AddMappers();
+//Dependency Injection for Services
+builder.Services.AddConfigServices();
+//Dependency Injection for Repository
+builder.Services.AddRepositoryServices();
+
+
+// Add CORS policy
+builder.Services.AddCors(options =>
+{
+	options.AddPolicy("AllowAll", policy =>
+	{
+		policy.AllowAnyOrigin()
+			  .AllowAnyMethod()
+			  .AllowAnyHeader();
+	});
+});
+
+// Configure JSON options
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+	options.SerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+	options.SerializerOptions.WriteIndented = true;
+});
 
 
 var app = builder.Build();

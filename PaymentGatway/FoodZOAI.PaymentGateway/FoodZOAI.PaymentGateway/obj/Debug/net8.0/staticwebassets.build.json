@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "9+7s5dluRxjo2sMS1fqa7QFSdQFttImXVr2JIhNeDE8=",
+  "Source": "FoodZOAI.PaymentGateway",
+  "BasePath": "_content/FoodZOAI.PaymentGateway",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}

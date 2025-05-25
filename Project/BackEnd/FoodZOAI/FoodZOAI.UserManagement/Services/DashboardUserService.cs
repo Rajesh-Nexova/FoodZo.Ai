@@ -1,11 +1,11 @@
 ﻿using FoodZOAI.UserManagement.Models;
 using FoodZOAI.UserManagement.Repository;
 
-public class UserService : IUserService
+public class DashboardUserService : IDashboardUserService
 {
     private readonly IUserRepository _repository;
 
-    public UserService(IUserRepository repository)
+    public DashboardUserService(IUserRepository repository)
     {
         _repository = repository;
     }

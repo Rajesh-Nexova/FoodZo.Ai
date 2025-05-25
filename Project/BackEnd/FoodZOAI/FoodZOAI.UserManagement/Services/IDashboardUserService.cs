@@ -1,6 +1,6 @@
 ﻿using FoodZOAI.UserManagement.Models;
 
-public interface IUserService 
+public interface IDashboardUserService 
 {
     Task<int> GetActiveUserCountAsync();
 
