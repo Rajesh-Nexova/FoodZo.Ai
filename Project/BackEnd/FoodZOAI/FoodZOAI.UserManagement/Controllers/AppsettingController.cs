@@ -21,8 +21,13 @@ namespace FoodZOAI.UserManagement.Controllers
             _logger = logger;
         }
 
-        [HttpGet("GetAllActiveSetting")] 
-        public async Task<IActionResult> GetAll()
+		public AppsettingController(IAppsettingsService appsettingsService)
+		{
+			_appsettingsService = appsettingsService;
+		}
+
+		[HttpGet("GetAllActiveSetting")] 
+        public async Task<ActionResult<List<AppsettingDTO>>> GetAllAsync()
         {
             var list = await _appsettingsService.GetAllAppsettingsAsync();
             var activeOnly = list.Where(x => x.IsActive).ToList();
@@ -30,7 +35,7 @@ namespace FoodZOAI.UserManagement.Controllers
         }
 
         [HttpGet("GetAllAppSettings")]
-        public async Task<IActionResult> GetAllAppSettings()
+        public async Task<ActionResult<List<AppsettingDTO>>> GetAllAppSettingsAsync()
         {
             // returns all settings including inactive
             var list = await _appsettingsService.GetAllAppsettingsAsync();
@@ -40,29 +45,29 @@ namespace FoodZOAI.UserManagement.Controllers
 
 
         [HttpGet("GetAppSetting/{id}")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<ActionResult<AppsettingDTO>> GetAsync(int id)
         {
             var setting = await _appsettingsService.GetAppsettingByIdAsync(id);
             return setting == null ? NotFound() : Ok(setting);
         }
         [HttpGet("GetAppSettingByKey")]
-        public async Task<IActionResult> GetByKey([FromQuery] string key)
+        public async Task<ActionResult<AppsettingDTO>> GetByKeyAsync([FromQuery] string key)
         {
             var setting = await _appsettingsService.GetAppsettingByKeyAsync(key);
             return setting == null ? NotFound() : Ok(setting);
         }
 
         [HttpPost("AddAppSetting")]
-        public async Task<IActionResult> Add([FromBody] AppsettingDTO dto)
+        public async Task<ActionResult<AppsettingDTO>> AddAsync([FromBody] AppsettingDTO dto)
         {
             
 			var added = await _appsettingsService.AddAppSettingAsync(dto);
-            return CreatedAtAction(nameof(Get), new { id = added.Id },
+            return CreatedAtAction(nameof(GetAsync), new { id = added.Id },
                 added);
         }
 
         [HttpPut("UpdateAppSetting/{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] AppsettingDTO dto)
+        public async Task<ActionResult<AppsettingDTO>> UpdateAsync(int id, [FromBody] AppsettingDTO dto)
         {
            
             var updated = await _appsettingsService.UpdateAppSettingAsync(dto);
@@ -70,7 +75,7 @@ namespace FoodZOAI.UserManagement.Controllers
         }
 
         [HttpDelete("DeleteAppSetting/{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
             var result = await _appsettingsService.DeleteAppSettingAsync(id);
             return result ? NoContent() : NotFound();
