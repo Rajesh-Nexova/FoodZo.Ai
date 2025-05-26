@@ -12,6 +12,11 @@ namespace FoodZOAI.UserManagement.Configuration
 {
 	public static class MapperServiceExtensions
 	{
+		/// <summary>
+		/// Dependency injection configuration for add mappers
+		/// </summary>
+		/// <param name="services"></param>
+		/// <returns></returns>
 		public static IServiceCollection AddMappers(this IServiceCollection services)
 		{
 			services.AddScoped<IAppsettingMapper, AppsettingMapper>();
