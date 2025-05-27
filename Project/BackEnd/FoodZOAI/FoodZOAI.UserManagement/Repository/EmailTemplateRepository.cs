@@ -18,14 +18,16 @@ namespace FoodZOAI.UserManagement.Repository
             await _Context.SaveChangesAsync();
         }
 
-        public  async Task DeleteAsync(int id)
+        public  async Task<bool> DeleteAsync(int id)
         {
             var email = await _Context.EmailTemplates.FindAsync(id);
             if (email != null)
             {
                 _Context.EmailTemplates.Remove(email);
                 await _Context.SaveChangesAsync();
+                return true;
             }
+            return false;
         }
 
         public async Task<bool> ExistsAsync(int id)
@@ -65,7 +67,6 @@ namespace FoodZOAI.UserManagement.Repository
             };
         }
 
-
-
+         
     }
 }

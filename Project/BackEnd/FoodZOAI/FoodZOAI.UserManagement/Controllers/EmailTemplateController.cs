@@ -4,6 +4,7 @@ using FoodZOAI.UserManagement.Contracts;
 using FoodZOAI.UserManagement.DTOs;
 using FoodZOAI.UserManagement.Models;
 using FoodZOAI.UserManagement.Repository;
+using FoodZOAI.UserManagement.Services.Contract;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoodZOAI.UserManagement.Controllers
@@ -12,124 +13,90 @@ namespace FoodZOAI.UserManagement.Controllers
     [ApiController]
     public class EmailTemplateController : ControllerBase
     {
-        private readonly IEmailTemplateRepository _emailTemplateRepository;
-        private readonly IEmailTemplateMapper _emailTemplateMapper;
 
-        public EmailTemplateController(IEmailTemplateRepository emailTemplateRepository,
+        private readonly IEmailTemplateService _emailTemplateService;
+        private readonly ILogger<EmailSMTPSettingController> _logger;
+        public EmailTemplateController(IEmailTemplateService emailTemplateService,
 
-           IEmailTemplateMapper emailTemplateMapper)
+           ILogger<EmailSMTPSettingController> logger)
         {
-            _emailTemplateRepository = emailTemplateRepository;
-            _emailTemplateMapper = emailTemplateMapper;
+            _emailTemplateService = emailTemplateService;
+            _logger = logger;
         }
 
-        [HttpGet("GetEmailTemplates")]
-        public async Task<IActionResult> GetEmailTemplates()
+        [HttpGet("GetAllEmailTemplate")]
+        public async Task<ActionResult<List<EmailTemplateDTO>>> GetAllAsync()
         {
             try
             {
-                var settings = await _emailTemplateRepository.GetAllAsync();
-                var result = _emailTemplateMapper.MapList(settings.ToList());
-                return Ok(result);
+                var settings = await _emailTemplateService.GetAllEmailTemplateAsync();
+                return Ok(settings);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(500, "An error occurred while retrieving the Email Templates.");
+                _logger.LogError(ex, "Error while fetching all EmailTemplate.");
+                return StatusCode(500, "Internal server error");
             }
         }
 
         [HttpGet("GetEmailTemplate/{id}")]
-        public async Task<IActionResult> GetEmailTemplateById(int id)
+        public async Task<ActionResult<EmailTemplateDTO>> GetByIdAsync(int id)
         {
             try
             {
-                var setting = await _emailTemplateRepository.GetByIdAsync(id);
-                if (setting == null)
-                    return NotFound("Email Templates not found.");
-
-                var result = _emailTemplateMapper.Map(setting);
-                return Ok(result);
+                var setting = await _emailTemplateService.GetEmailTemplateByIdAsync(id);
+                return setting == null ? NotFound() : Ok(setting);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(500, "An error occurred while retrieving the email Template.");
+                _logger.LogError(ex, $"Error while fetching Email Template with id {id}.");
+                return StatusCode(500, "Internal server error");
             }
         }
 
+        
 
-        [HttpDelete("DeleteEmailTemplate/{id}")]
-        public async Task<IActionResult> DeleteEmailTemplate(int id)
+
+
+        [HttpPost("AddAppSetting")]
+        public async Task<ActionResult<EmailTemplateDTO>> AddAsync([FromBody] EmailTemplateDTO dto)
         {
-            try
-            {
-                var exists = await _emailTemplateRepository.ExistsAsync(id);
-                if (!exists)
-                    return NotFound("Email Template not found.");
 
-                await _emailTemplateRepository.DeleteAsync(id);
-                return Ok("Email Template deleted successfully.");
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, "An error occurred while deleting the email Template.");
-            }
+            var added = await _emailTemplateService.AddEmailTemplateAsync(dto);
+            return CreatedAtAction(nameof(GetByIdAsync), new { id = added.Id },
+                added);
         }
-
 
 
         [HttpPut("UpdateEmailTemplate/{id}")]
-        public async Task<IActionResult> UpdateEmailTemplate(int id, [FromBody] EmailTemplateDTO updatedDto)
+        public async Task<ActionResult<EmailTemplateDTO>> UpdateAsync(int id, [FromBody] EmailTemplateDTO dto)
         {
             try
             {
-                var existing = await _emailTemplateRepository.GetByIdAsync(id);
-                if (existing == null)
-                    return NotFound("Email template not found.");
-
-              
-                existing.Name = updatedDto.Name;
-                existing.Subject = updatedDto.Subject;
-                existing.Body = updatedDto.Body;
-                existing.IsActive = updatedDto.IsActive;
-                existing.ModifiedByUser = updatedDto.ModifiedByUser;
-
-                await _emailTemplateRepository.UpdateAsync(existing);
-
-                var result = _emailTemplateMapper.Map(existing);
-                return Ok(result);
+                var updated = await _emailTemplateService.UpdateEmailTemplateAsync(id, dto);
+                return updated == null ? NotFound() : Ok(updated);
             }
             catch (Exception ex)
             {
-                var innerMessage = ex.InnerException != null ? ex.InnerException.Message : "";
-                return StatusCode(500, $"An error occurred while updating the email template: {ex.Message} {innerMessage}");
+                _logger.LogError(ex, $"Error while updating Email Template with id {id}.");
+                return StatusCode(500, "Internal server error");
             }
         }
 
-        [HttpPost("AddEmailTemplate")]
-        public async Task<IActionResult> AddEmailTemplate([FromBody] EmailTemplateDTO templateDto)
+        [HttpDelete("DeleteEmailTemplate/{id}")]
+        public async Task<IActionResult> DeleteAsync(int id)
         {
             try
             {
-                if (templateDto == null)
-                    return BadRequest("Email template data is required.");
-
-                var template = _emailTemplateMapper.MapToDomain(templateDto);
-
-                
-                template.CreatedByUser = templateDto.CreatedByUser;
-
-                await _emailTemplateRepository.AddAsync(template);
-
-                var resultDto = _emailTemplateMapper.Map(template);
-                return CreatedAtAction(nameof(GetEmailTemplateById), new { id = template.Id }, resultDto);
+                var result = await _emailTemplateService.DeleteEmailTemplateAsync(id);
+                return result ? NoContent() : NotFound();
             }
             catch (Exception ex)
             {
-                var innerMessage = ex.InnerException != null ? ex.InnerException.Message : "";
-                return StatusCode(500, $"An error occurred while adding the email template: {ex.Message} {innerMessage}");
+                _logger.LogError(ex, $"Error while deleting Email SMTP setting with id {id}.");
+                return StatusCode(500, "Internal server error");
             }
         }
-
 
     }
 }
