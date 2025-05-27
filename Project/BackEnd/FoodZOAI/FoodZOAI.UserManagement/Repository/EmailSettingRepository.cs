@@ -29,14 +29,16 @@ namespace FoodZOAI.UserManagement.Repository
             await _Context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
             var email = await _Context.EmailSettings.FindAsync(id);
             if (email != null)
             {
                 _Context.EmailSettings.Remove(email);
                 await _Context.SaveChangesAsync();
+                return true;
             }
+            return false;
         }
 
         public async Task<bool> ExistsAsync(int id)
