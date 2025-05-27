@@ -22,7 +22,11 @@ function App(){
         <Route path="/change-password" element={<ChangePassword />} /> 
         <Route path="/dashboard" element={<Dashboard />} />
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
          <Route path="/permissions" element={<Permissions />} />
+=======
+                <Route path="/permissions" element={<Permissions />} />
+>>>>>>> Stashed changes
 =======
                 <Route path="/permissions" element={<Permissions />} />
 >>>>>>> Stashed changes
