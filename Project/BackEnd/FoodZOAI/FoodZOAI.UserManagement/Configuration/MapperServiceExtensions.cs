@@ -20,8 +20,13 @@ namespace FoodZOAI.UserManagement.Configuration
 		public static IServiceCollection AddMappers(this IServiceCollection services)
 		{
 			services.AddScoped<IAppsettingMapper, AppsettingMapper>();
+
             services.AddScoped<IUserProfileMapper, UserProfileMapper>();
             services.AddScoped<IUserMapper, UserMapper>();
+
+            services.AddScoped<IEmailSettingMapper, EmailSettingMapper>();
+            services.AddScoped<IEmailTemplateMapper, EmailTemplateMapper>();
+
             return services;
 		}
 
@@ -31,12 +36,21 @@ namespace FoodZOAI.UserManagement.Configuration
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IAppsettingRepository, AppsettingRepository>();
 			return services;
+
+			services.AddScoped<IAppsettingRepository, AppsettingRepository>();
+            services.AddScoped<IEmailSettingRepository, EmailSettingRepository>();
+            services.AddScoped<IEmailTemplateRepository, EmailTemplateRepository>();
+            return services;
 		}
 		public static IServiceCollection AddConfigServices(this IServiceCollection services)
 		{
 			services.AddScoped<IAppsettingsService, AppsettingsService>();
+
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IFileService, FileService>();
+
+            services.AddScoped<IEmailSMTPSettingService, EmailSMTPSettingService>();
+            services.AddScoped<IEmailTemplateService, EmailTemplateService>();
             return services;
 		}
 

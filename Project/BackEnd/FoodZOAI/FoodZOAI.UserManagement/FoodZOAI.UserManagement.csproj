@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+
     <Compile Remove="Configuration\Contracts\IEmailSettingMapper.cs" />
     <Compile Remove="Configuration\Contracts\IEmailTemplateMapper.cs" />
     <Compile Remove="Configuration\Contracts\IOrganizationMapper.cs" />
@@ -65,10 +66,10 @@
     <Compile Remove="Services\DashboardUserService.cs" />
     <Compile Remove="Services\EmailService.cs" />
     <Compile Remove="Services\IDashboardUserService.cs" />
+
+    <Compile Remove="Services\EmailService.cs" />
+
     <Compile Remove="Services\IEmailService.cs" />
-    <Compile Remove="Services\IFileService.cs" />
-    <Compile Remove="Services\IPermissionService.cs" />
-    <Compile Remove="Services\PermissionService.cs" />
     <Compile Remove="Validators\PermissionValidator.cs" />
   </ItemGroup>
 
