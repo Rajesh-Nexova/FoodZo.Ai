@@ -21,7 +21,11 @@ function App(){
         <Route path="/verify-otp" element={<OtpVerification />} />
         <Route path="/change-password" element={<ChangePassword />} /> 
         <Route path="/dashboard" element={<Dashboard />} />
+<<<<<<< Updated upstream
          <Route path="/permissions" element={<Permissions />} />
+=======
+                <Route path="/permissions" element={<Permissions />} />
+>>>>>>> Stashed changes
         <Route path="/role_permission" element={<RolePermissionsPage/>}/>
       </Routes>
       </BrowserRouter>
