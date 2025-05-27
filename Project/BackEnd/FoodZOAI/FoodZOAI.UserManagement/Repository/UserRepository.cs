@@ -149,6 +149,9 @@ namespace FoodZOAI.UserManagement.Repository
                 .ToListAsync();
         }
 
-       
+        public Task UpdateAsync(User user)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

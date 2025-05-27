@@ -21,7 +21,9 @@ namespace FoodZOAI.UserManagement.Configuration
 		{
 			services.AddScoped<IAppsettingMapper, AppsettingMapper>();
             services.AddScoped<IEmailSettingMapper, EmailSettingMapper>();
-            services.AddScoped<IEmailTemplateMapper, EmailTemplateMapper>();
+            services.AddScoped<IDailyReminderMapper, EmailTemplateMapper>();
+            services.AddScoped<IDailyReminderMapper, EmailTemplateMapper>();
+
             return services;
 		}
 

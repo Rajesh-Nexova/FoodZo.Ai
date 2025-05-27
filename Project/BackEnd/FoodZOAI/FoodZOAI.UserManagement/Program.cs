@@ -4,25 +4,15 @@ using FoodZOAI.UserManagement.Configuration.Contracts;
 using FoodZOAI.UserManagement.Configuration.Mappers;
 using FoodZOAI.UserManagement.Contracts;
 using FoodZOAI.UserManagement.Models;
+using FoodZOAI.UserManagement.Repositories.Contracts;
+using FoodZOAI.UserManagement.Repositories;
 using FoodZOAI.UserManagement.Repository;
+using FoodZOAI.UserManagement.Services.Contracts;
+using FoodZOAI.UserManagement.Services;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
-
-
-// Configure Serilog
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Debug()
-    .WriteTo.Console()
-    .WriteTo.File("Logs/log.txt", rollingInterval: RollingInterval.Day)
-    .CreateLogger();
-
-builder.Host.UseSerilog(); // Use Serilog instead of default logger
-
-
-
 
 //builder.Services.AddDbContext<FoodZoaiContext>(options =>
 //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -89,6 +79,20 @@ builder.Services.AddConfigServices();
 builder.Services.AddRepositoryServices();
 //Dependency Injection for FileStorage
 builder.Services.AddFileStorage(builder.Configuration);
+
+
+builder.Services.AddScoped<IDailyReminderRepository, DailyReminderRepository>();
+builder.Services.AddScoped<IDailyReminderService, DailyReminderService>();
+builder.Services.AddScoped<IDailyReminderMapper, DailyReminderMapper>();
+
+builder.Services.AddScoped<IWeeklyReminderRepository, WeeklyReminderRepository>();
+builder.Services.AddScoped<IWeeklyReminderService, WeeklyReminderService>();
+builder.Services.AddScoped<IWeeklyReminderMapper, WeeklyReminderMapper>();
+
+builder.Services.AddScoped<IMonthlyReminderRepository, MonthlyReminderRepository>();
+builder.Services.AddScoped<IMonthlyReminderService, MonthlyReminderService>();
+builder.Services.AddScoped<IMonthlyReminderMapper, MonthlyReminderMapper>();
+
 
 
 // Add CORS policy
