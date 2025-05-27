@@ -2,43 +2,59 @@
 using FoodZOAI.UserManagement.DTOs;
 using FoodZOAI.UserManagement.Models;
 
-namespace FoodZOAI.UserManagement.Configuration.Mappers
+public class PermissionMapper : IPermissionMapper
 {
-    public class PermissionMapper : IPermissionMapper
+    public RoleDTO Map(Role source)
     {
-        public PermissionDTO ToDTO(Permission entity)
-        {
-            return new PermissionDTO
-            {
-                Id = entity.Id,
-                Name = entity.Name,
-                Slug = entity.Slug,
-                Description = entity.Description,
-                Module = entity.Module,
-                Action = entity.Action,
-                Resource = entity.Resource,
-                IsSystemPermission = entity.IsSystemPermission,
-                CreatedAt = entity.CreatedAt,
-                UpdatedAt = entity.UpdatedAt
-            };
-        }
-
-        public Permission ToEntity(PermissionDTO dto)
-        {
-            return new Permission
-            {
-                Id = dto.Id,
-                Name = dto.Name,
-                Slug = dto.Slug,
-                Description = dto.Description,
-                Module = dto.Module,
-                Action = dto.Action,
-                Resource = dto.Resource,
-                IsSystemPermission = dto.IsSystemPermission,
-                CreatedAt = dto.CreatedAt,
-                UpdatedAt = dto.UpdatedAt
-            };
-        }
+        throw new NotImplementedException();
     }
 
+    public PermissionDTO Map(Permission source)
+    {
+        throw new NotImplementedException();
+    }
+
+    public List<RoleDTO> MapList(List<Role> source)
+    {
+        throw new NotImplementedException();
+    }
+
+    public List<PermissionDTO> MapList(List<Permission> source)
+    {
+        throw new NotImplementedException();
+    }
+
+    public PermissionDTO ToDTO(Permission model)
+    {
+        return new PermissionDTO
+        {
+            Id = model.Id,
+            Name = model.Name,
+            Slug = model.Slug,
+            Description = model.Description,
+            Module = model.Module,
+            Action = model.Action,
+            Resource = model.Resource,
+            IsSystemPermission = model.IsSystemPermission,
+            CreatedAt = model.CreatedAt,
+            UpdatedAt = model.UpdatedAt
+        };
+    }
+
+    public Permission ToEntity(PermissionDTO dto)
+    {
+        return new Permission
+        {
+            Id = dto.Id,
+            Name = dto.Name,
+            Slug = dto.Slug,
+            Description = dto.Description,
+            Module = dto.Module,
+            Action = dto.Action,
+            Resource = dto.Resource,
+            IsSystemPermission = dto.IsSystemPermission,
+            CreatedAt = dto.CreatedAt,
+            UpdatedAt = dto.UpdatedAt
+        };
+    }
 }

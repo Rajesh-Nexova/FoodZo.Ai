@@ -5,6 +5,7 @@ using FoodZOAI.UserManagement.Configuration.Mappers;
 using FoodZOAI.UserManagement.Contracts;
 using FoodZOAI.UserManagement.FileFactory;
 using FoodZOAI.UserManagement.Repository;
+using FoodZOAI.UserManagement.Services;
 using FoodZOAI.UserManagement.Services.Contract;
 using FoodZOAI.UserManagement.Services.Implementation;
 
@@ -20,24 +21,37 @@ namespace FoodZOAI.UserManagement.Configuration
 		public static IServiceCollection AddMappers(this IServiceCollection services)
 		{
 			services.AddScoped<IAppsettingMapper, AppsettingMapper>();
-
             services.AddScoped<IUserProfileMapper, UserProfileMapper>();
             services.AddScoped<IUserMapper, UserMapper>();
-
+            services.AddScoped<IPermissionMapper, PermissionMapper>();
             services.AddScoped<IEmailSettingMapper, EmailSettingMapper>();
             services.AddScoped<IEmailTemplateMapper, EmailTemplateMapper>();
+            services.AddScoped<IPermissionMapper, PermissionMapper>();
 
             return services;
 		}
 
+
+
+
+
+
+
+
+
+
+
+
 		public static IServiceCollection AddRepositoryServices(this IServiceCollection services)
 		{
+            services.AddScoped<IPermissionRepository, PermissionRepository>();
+            services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<IUserProfileRepository, UserProfileRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IAppsettingRepository, AppsettingRepository>();
-			return services;
-
-			services.AddScoped<IAppsettingRepository, AppsettingRepository>();
+            services.AddScoped<IRoleRepository, RoleRepository>();
+            services.AddScoped<IPermissionRepository, PermissionRepository>();
+            services.AddScoped<IAppsettingRepository, AppsettingRepository>();
             services.AddScoped<IEmailSettingRepository, EmailSettingRepository>();
             services.AddScoped<IEmailTemplateRepository, EmailTemplateRepository>();
             return services;
@@ -51,6 +65,7 @@ namespace FoodZOAI.UserManagement.Configuration
 
             services.AddScoped<IEmailSMTPSettingService, EmailSMTPSettingService>();
             services.AddScoped<IEmailTemplateService, EmailTemplateService>();
+
             return services;
 		}
 
@@ -68,9 +83,11 @@ namespace FoodZOAI.UserManagement.Configuration
 				var factory = provider.GetRequiredService<IFileStorageFactory>();
 				return factory.CreateStorageService();
 			});
-
-			return services;
+            services.AddScoped<IPermissionService, PermissionService>();
+          services.AddScoped<IPermissionService, PermissionService>();
+            return services;
 		}
 
 	}
 }
+
