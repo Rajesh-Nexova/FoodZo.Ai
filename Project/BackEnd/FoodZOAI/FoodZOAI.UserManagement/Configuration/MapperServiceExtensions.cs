@@ -26,6 +26,10 @@ namespace FoodZOAI.UserManagement.Configuration
 
             services.AddScoped<IEmailSettingMapper, EmailSettingMapper>();
             services.AddScoped<IEmailTemplateMapper, EmailTemplateMapper>();
+            services.AddScoped<IOrganizationMapper, OrganizationMapper>();
+
+
+
 
             return services;
 		}
@@ -35,11 +39,12 @@ namespace FoodZOAI.UserManagement.Configuration
             services.AddScoped<IUserProfileRepository, UserProfileRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IAppsettingRepository, AppsettingRepository>();
-			return services;
+			
 
 			services.AddScoped<IAppsettingRepository, AppsettingRepository>();
             services.AddScoped<IEmailSettingRepository, EmailSettingRepository>();
             services.AddScoped<IEmailTemplateRepository, EmailTemplateRepository>();
+            services.AddScoped<IOrganizationRepository, OrganizationRepository>();
             return services;
 		}
 		public static IServiceCollection AddConfigServices(this IServiceCollection services)
@@ -51,6 +56,7 @@ namespace FoodZOAI.UserManagement.Configuration
 
             services.AddScoped<IEmailSMTPSettingService, EmailSMTPSettingService>();
             services.AddScoped<IEmailTemplateService, EmailTemplateService>();
+
             return services;
 		}
 
