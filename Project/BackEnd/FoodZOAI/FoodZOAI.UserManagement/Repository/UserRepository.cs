@@ -20,27 +20,22 @@ namespace FoodZOAI.UserManagement.Repository
             return user;
         }
 
-        public async Task<User?> GetUserByIdAsync(int id)
+        public async Task<User?> GetByIdAsync(int id)
         {
             return await _context.Users.FindAsync(id);
         }
 
-        public async Task<User> GetByIdAsync(int id)
-        {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
-                throw new KeyNotFoundException($"User with ID {id} not found.");
-            return user;
-        }
-
         public async Task<IEnumerable<User>> GetAllUsersAsync()
         {
-            return await _context.Users.ToListAsync();
+            return await _context.Users
+                .Where(u => u.DeletedAt == null)
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<User>> GetPaginatedUsersAsync(int pageNumber, int pageSize)
         {
             return await _context.Users
+                .Where(u => u.DeletedAt == null)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -49,6 +44,7 @@ namespace FoodZOAI.UserManagement.Repository
         public async Task<IEnumerable<User>> GetRecentlyRegisteredUsersAsync(int count)
         {
             return await _context.Users
+                .Where(u => u.DeletedAt == null)
                 .OrderByDescending(u => u.CreatedAt)
                 .Take(count)
                 .ToListAsync();
@@ -57,7 +53,7 @@ namespace FoodZOAI.UserManagement.Repository
         public async Task<User?> GetUserByEmailAsync(string email)
         {
             return await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == email);
+                .FirstOrDefaultAsync(u => u.Email == email && u.DeletedAt == null);
         }
 
         public async Task<User?> GetUserByUsernameAsync(string username)
@@ -66,20 +62,17 @@ namespace FoodZOAI.UserManagement.Repository
                 .FirstOrDefaultAsync(u => u.Username == username && u.DeletedAt == null);
         }
 
+        public async Task<User?> GetByUserIdAsync(int userId)
+        {
+            return await _context.Users
+                .FirstOrDefaultAsync(u => u.Id == userId && u.DeletedAt == null);
+        }
+
         public async Task<User> UpdateUserAsync(User user)
         {
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
             return user;
-        }
-
-        public async Task UpdateAsync(object user)
-        {
-            if (user is not User u)
-                throw new ArgumentException("Invalid user object", nameof(user));
-
-            _context.Users.Update(u);
-            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteUserAsync(int id)
@@ -106,34 +99,6 @@ namespace FoodZOAI.UserManagement.Repository
             return true;
         }
 
-        public async Task GetByIdAsync(object userId)
-        {
-            if (userId is not int id)
-                throw new ArgumentException("Invalid user ID type", nameof(userId));
-
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
-                throw new KeyNotFoundException($"User with ID {id} not found.");
-
-            // No return because this method returns Task (void), not Task<User>
-        }
-
-        public async Task<IEnumerable<User>> GetUsersOrderedByCreationDateAsync(int count)
-        {
-            return await _context.Users
-                .Where(u => u.DeletedAt == null) // Optional: exclude deleted users
-                .OrderByDescending(u => u.CreatedAt)
-                .Take(count)
-                .ToListAsync();
-        }
-
-        public async Task<User> GetByUserIdAsync(int userId)
-        {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-        }
-
-        
-
         public async Task<int> GetTotalUserCountAsync()
         {
             return await _context.Users
@@ -149,7 +114,23 @@ namespace FoodZOAI.UserManagement.Repository
                 .ToListAsync();
         }
 
+        public Task<User?> GetByCredentialsAsync(string username, string passwordHash)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<User>> GetUsersForDropdownAsync()
+        {
+            throw new NotImplementedException();
+        }
+
         public Task UpdateAsync(User user)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public Task<bool> ResetPasswordAsync(int userId, string newPasswordHash)
         {
             throw new NotImplementedException();
         }
