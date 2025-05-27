@@ -49,6 +49,14 @@ public partial class FoodZoaiContext : DbContext
 
     public DbSet<MonthlyReminder> MonthlyReminders { get; set; }
 
+    public virtual DbSet<QuarterlyReminder> QuarterlyReminders { get; set; }
+
+    public virtual DbSet<HalfYearlyReminder> HalfYearlyReminders { get; set; }
+
+    public DbSet<YearlyReminder> YearlyReminders { get; set; } = null!;
+
+    public DbSet<OneTimeReminder> OneTimeReminders { get; set; }
+
 
 
 
