@@ -169,6 +169,10 @@ public partial class FoodZoaiContext : DbContext
                 .HasMaxLength(500)
                 .IsUnicode(false)
                 .HasColumnName("logo_url");
+            entity.Property(e => e.Banner_Image)
+               .HasMaxLength(500)
+               .IsUnicode(false)
+               .HasColumnName("banner_image");
             entity.Property(e => e.MaxUsers)
                 .HasDefaultValue(10)
                 .HasColumnName("max_users");

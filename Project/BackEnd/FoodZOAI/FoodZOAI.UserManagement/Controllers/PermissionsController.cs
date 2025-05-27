@@ -1,5 +1,5 @@
 ﻿using FoodZOAI.UserManagement.DTOs;
-using FoodZOAI.UserManagement.Services;
+using FoodZOAI.UserManagement.Services.Contract;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoodZOAI.UserManagement.Controllers

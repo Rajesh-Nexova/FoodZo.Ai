@@ -16,6 +16,7 @@ public partial class Organization
     public string? Website { get; set; }
 
     public string? LogoUrl { get; set; }
+    public string? Banner_Image { get; set; }
 
     public string? SubscriptionPlan { get; set; }
 

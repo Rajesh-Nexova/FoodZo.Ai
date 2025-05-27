@@ -1,18 +1,8 @@
-
-﻿using FoodZOAI.UserManagement.Configuration.Contracts;
-using FoodZOAI.UserManagement.Configuration.Mappers;
-using FoodZOAI.UserManagement.Contracts;
 using FoodZOAI.UserManagement.CustomMiddleWare;
 
 using FoodZOAI.UserManagement.DTOs;
-using FoodZOAI.UserManagement.Repository;
-
-﻿using FoodZOAI.UserManagement.CustomMiddleWare;
-using FoodZOAI.UserManagement.DTOs;
-using FoodZOAI.UserManagement.Repository;
 using FoodZOAI.UserManagement.Services.Contract;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace FoodZOAI.UserManagement.Controllers
 {
@@ -128,6 +118,9 @@ namespace FoodZOAI.UserManagement.Controllers
         }
 
     }
-    }
 }
+
+    }
+
+
 

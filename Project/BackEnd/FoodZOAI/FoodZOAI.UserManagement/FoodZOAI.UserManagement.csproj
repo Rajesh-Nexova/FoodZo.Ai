@@ -18,19 +18,29 @@
   </ItemGroup>
 
   <ItemGroup>
+
     <Compile Remove="Configuration\Contracts\IOrganizationMapper.cs" />
     <Compile Remove="Configuration\Contracts\IRoleMapper.cs" />
     <Compile Remove="Configuration\Mappers\MapperServiceExtension.cs" />
     <Compile Remove="Configuration\Mappers\OrganizationMapper.cs" />
     <Compile Remove="Configuration\Mappers\RoleMapper.cs" />
     <Compile Remove="Contracts\IOrganizationRepository.cs" />
+     <Compile Remove="Configuration\Contracts\IRoleMapper.cs" />
+    <Compile Remove="Configuration\Mappers\MapperServiceExtension.cs" />
+    <Compile Remove="Configuration\Mappers\RoleMapper.cs" />
+
+
     <Compile Remove="Contracts\IRoleRepository.cs" />
-    <Compile Remove="Controllers\CompanyProfileController.cs" />
-    <Compile Remove="Controllers\EmailSMTPSettingController.cs" />
-    <Compile Remove="Controllers\EmailTemplateController.cs" />
     <Compile Remove="Controllers\PermissionsController.cs" />
     <Compile Remove="Controllers\SendEmailController.cs" />
     <Compile Remove="Repository\OrganizationRepository.cs" />
+    <Compile Remove="DTOs\ReminderNotificationDTO.cs" />
+    <Compile Remove="DTOs\ReminderSchedulerDTO.cs" />
+    <Compile Remove="DTOs\ReminderUserDTO.cs" />
+    <Compile Remove="DTOs\RoleDTO.cs" />
+    <Compile Remove="DTOs\UserNotificationDTO.cs" />
+    <Compile Remove="DTOs\UserSessionDTO.cs" />
+    <Compile Remove="DTOs\YearlyReminderDTO.cs" />
     <Compile Remove="Services\DashboardUserService.cs" />
     <Compile Remove="Services\EmailService.cs" />
     <Compile Remove="Services\IDashboardUserService.cs" />
