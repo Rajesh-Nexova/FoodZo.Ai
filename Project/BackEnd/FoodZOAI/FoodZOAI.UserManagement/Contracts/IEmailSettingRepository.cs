@@ -14,8 +14,8 @@ namespace FoodZOAI.UserManagement.Contracts
         Task<EmailSetting?> GetByIdAsync(int id);
         Task AddAsync(EmailSetting emailSetting);
         Task UpdateAsync(EmailSetting emailSetting);
-        Task DeleteAsync(int id);
-        
+        Task<bool> DeleteAsync(int id);
+
         Task<bool> ExistsAsync(int id);
 
         

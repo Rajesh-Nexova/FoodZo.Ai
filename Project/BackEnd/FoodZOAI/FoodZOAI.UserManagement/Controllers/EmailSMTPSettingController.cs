@@ -1,8 +1,10 @@
 ﻿using FoodZOAI.UserManagement.Configuration.Contracts;
 using FoodZOAI.UserManagement.Configuration.Mappers;
 using FoodZOAI.UserManagement.Contracts;
+using FoodZOAI.UserManagement.CustomMiddleWare;
 using FoodZOAI.UserManagement.DTOs;
 using FoodZOAI.UserManagement.Repository;
+using FoodZOAI.UserManagement.Services.Contract;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,127 +12,119 @@ namespace FoodZOAI.UserManagement.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+
     public class EmailSMTPSettingController : ControllerBase
     {
-        private readonly IEmailSettingRepository _emailSettingRepository;
-        private readonly IEmailSettingMapper _emailSettingMapper;
+        private readonly IEmailSMTPSettingService _emailSMTPSettingService;
+        private readonly ILogger<EmailSMTPSettingController> _logger;
 
-        public EmailSMTPSettingController(IEmailSettingRepository emailSettingRepository,
 
-           IEmailSettingMapper emailSettingMapper)
+        public EmailSMTPSettingController(IEmailSMTPSettingService emailSMTPSettingService, ILogger<EmailSMTPSettingController> logger)
         {
-            _emailSettingRepository = emailSettingRepository;
-            _emailSettingMapper = emailSettingMapper;
+            _emailSMTPSettingService = emailSMTPSettingService;
+            _logger = logger;
+
+
         }
-       
-        [HttpGet("GetEmailSMTPSettings")]
-        public async Task<IActionResult> GetEmailSMTPSettings()
+
+        public EmailSMTPSettingController(IEmailSMTPSettingService emailSMTPSettingservice)
+        {
+            _emailSMTPSettingService = emailSMTPSettingservice;
+        }
+
+
+        [HttpGet("GetAllEmailSMTPSettings")]
+        public async Task<ActionResult<List<EmailSettingDTO>>> GetAllAsync()
         {
             try
             {
-                var settings = await _emailSettingRepository.GetAllAsync();
-                var result = _emailSettingMapper.MapList(settings.ToList());
-                return Ok(result);
+                EmailSettingLogger.LogInfo("Fetching all Email SMTP settings");
+                var settings = await _emailSMTPSettingService.GetAllEmailSMTPSettingAsync();
+                return Ok(settings);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(500, "An error occurred while retrieving the email settings.");
+                EmailSettingLogger.LogError("Error while fetching all Email SMTP settings.", ex);
+                return StatusCode(500, "Internal server error");
             }
         }
 
         [HttpGet("GetEmailSMTPSetting/{id}")]
-        public async Task<IActionResult> GetEmailSMTPSettingById(int id)
+        public async Task<ActionResult<EmailSettingDTO>> GetByIdAsync(int id)
         {
             try
             {
-                var setting = await _emailSettingRepository.GetByIdAsync(id);
-                if (setting == null)
-                    return NotFound("Email setting not found.");
-
-                var result = _emailSettingMapper.Map(setting);
-                return Ok(result);
+                EmailSettingLogger.LogInfo($"Fetching Email SMTP setting with id: {id}");
+                var setting = await _emailSMTPSettingService.GetEmailSMTPSettingByIdAsync(id);
+                return setting == null ? NotFound() : Ok(setting);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(500, "An error occurred while retrieving the email setting.");
+                EmailSettingLogger.LogError($"Error while fetching Email SMTP setting with id {id}.", ex);
+
+                _logger.LogError(ex, $"Error while fetching Email SMTP setting with id {id}.");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+
+        [HttpPost("AddEmailSMTPSetting")]
+        public async Task<ActionResult<EmailSettingDTO>> AddAsync([FromBody] EmailSettingDTO dto)
+        {
+            try
+
+            {
+                EmailSettingLogger.LogInfo("Adding new Email SMTP setting", dto);
+
+                var created = await _emailSMTPSettingService.AddEmailSMTPSettingAsync(dto);
+                return CreatedAtAction(nameof(GetByIdAsync), new { id = created.Id }, created);
+            }
+            catch (Exception ex)
+            {
+                EmailSettingLogger.LogError("Error while adding Email SMTP setting.", ex);
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpPut("UpdateEmailSMTPSetting/{id}")]
+        public async Task<ActionResult<EmailSettingDTO>> UpdateAsync(int id, [FromBody] EmailSettingDTO dto)
+        {
+            try
+            {
+                EmailSettingLogger.LogInfo($"Updating Email SMTP setting with id {id}", dto);
+
+                var updated = await _emailSMTPSettingService.UpdateEmailSMTPSettingAsync(id, dto);
+                return updated == null ? NotFound() : Ok(updated);
+            }
+            catch (Exception ex)
+            {
+                EmailSettingLogger.LogError($"Error while updating Email SMTP setting with id {id}.", ex);
+                return StatusCode(500, "Internal server error");
             }
         }
 
 
         [HttpDelete("DeleteEmailSMTPSetting/{id}")]
-        public async Task<IActionResult> DeleteEmailSMTPSetting(int id)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
             try
             {
-                var exists = await _emailSettingRepository.ExistsAsync(id);
-                if (!exists)
-                    return NotFound("Email setting not found.");
+                EmailSettingLogger.LogInfo($"Deleting Email SMTP setting with id {id}");
 
-                await _emailSettingRepository.DeleteAsync(id);
-                return Ok("Email setting deleted successfully.");
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, "An error occurred while deleting the email setting.");
-            }
-        }
-
-        [HttpPost("AddEmailSMTPSetting")]
-        public async Task<IActionResult> AddEmailSMTPSetting([FromBody] EmailSettingDTO templateDto)
-        {
-            try
-            {
-                if (templateDto == null)
-                    return BadRequest("EmailSMTPSetting data is required.");
-
-                var template = _emailSettingMapper.MapToDomain(templateDto);
-
-
-                template.CreatedByUser = templateDto.CreatedByUser;
-
-                await _emailSettingRepository.AddAsync(template);
-
-                var resultDto = _emailSettingMapper.Map(template);
-                return CreatedAtAction(nameof(GetEmailSMTPSettingById), new { id = template.Id }, resultDto);
+                var result = await _emailSMTPSettingService.DeleteEmailSMTPSettingAsync(id);
+                return result ? NoContent() : NotFound();
             }
             catch (Exception ex)
             {
-                var innerMessage = ex.InnerException != null ? ex.InnerException.Message : "";
-                return StatusCode(500, $"An error occurred while adding the email template: {ex.Message} {innerMessage}");
+                EmailSettingLogger.LogError($"Error while deleting Email SMTP setting with id {id}.", ex);
+                return StatusCode(500, "Internal server error");
             }
         }
 
 
 
-        [HttpPut("UpdateEmailSMTPSetting/{id}")]
-        public async Task<IActionResult> UpdateEmailSMTPSetting(int id, [FromBody] EmailSettingDTO updatedDto)
-        {
-            try
-            {
-                var existing = await _emailSettingRepository.GetByIdAsync(id);
-                if (existing == null)
-                    return NotFound("Email setting not found.");
 
-                
-                existing.Host = updatedDto.Host;
-                existing.UserName = updatedDto.UserName;
-                existing.Password = updatedDto.Password;
-                existing.IsEnableSsl = updatedDto.IsEnableSsl;
-                existing.IsDefault = updatedDto.IsDefault;
-                existing.IsActive = updatedDto.IsActive;
-                existing.ModifiedByUser = updatedDto.ModifiedByUser;
-
-                await _emailSettingRepository.UpdateAsync(existing);
-
-                var result = _emailSettingMapper.Map(existing);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                var innerMessage = ex.InnerException != null ? ex.InnerException.Message : "";
-                return StatusCode(500, $"An error occurred while updating the email setting: {ex.Message} {innerMessage}");
-            }
-        }
+    }
 
 
 

@@ -20,19 +20,24 @@ namespace FoodZOAI.UserManagement.Configuration
 		public static IServiceCollection AddMappers(this IServiceCollection services)
 		{
 			services.AddScoped<IAppsettingMapper, AppsettingMapper>();
-			return services;
+            services.AddScoped<IUserProfileMapper, UserProfileMapper>();
+            services.AddScoped<IUserMapper, UserMapper>();
+            return services;
 		}
 
 		public static IServiceCollection AddRepositoryServices(this IServiceCollection services)
 		{
-			services.AddScoped<IAppsettingRepository, AppsettingRepository>();
+            services.AddScoped<IUserProfileRepository, UserProfileRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IAppsettingRepository, AppsettingRepository>();
 			return services;
 		}
 		public static IServiceCollection AddConfigServices(this IServiceCollection services)
 		{
 			services.AddScoped<IAppsettingsService, AppsettingsService>();
-			
-			return services;
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IFileService, FileService>();
+            return services;
 		}
 
 		public static IServiceCollection AddFileStorage(this IServiceCollection services, IConfiguration configuration)

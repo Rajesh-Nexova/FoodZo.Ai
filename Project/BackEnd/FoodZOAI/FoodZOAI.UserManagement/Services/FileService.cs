@@ -1,4 +1,4 @@
-﻿using FoodZOAI.UserManagement.Services;
+﻿using FoodZOAI.UserManagement.Services.Contract;
 
 public class FileService : IFileService
 {
@@ -50,4 +50,8 @@ public class FileService : IFileService
         return "/" + relativePath;
     }
 
+    public Task<string> SaveUserProfilePhotoAsync(IFormFile photo)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -42,11 +42,11 @@ namespace FoodZOAI.UserManagement.Configuration.Mappers
             return source.Select(Map).ToList();
         }
 
-       
 
-        
 
-        
+
+
+
 
         public UserProfile MapToDomain(UserProfileDTO dto)
         {
@@ -72,6 +72,9 @@ namespace FoodZOAI.UserManagement.Configuration.Mappers
             };
         }
 
-        
+        public UserProfile MapToDomain(UserProfileDTO profileDto, UserProfile profile)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -6,9 +6,23 @@ using FoodZOAI.UserManagement.Contracts;
 using FoodZOAI.UserManagement.Models;
 using FoodZOAI.UserManagement.Repository;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .WriteTo.Console()
+    .WriteTo.File("Logs/log.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+builder.Host.UseSerilog(); // Use Serilog instead of default logger
+
+
+
 
 //builder.Services.AddDbContext<FoodZoaiContext>(options =>
 //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
