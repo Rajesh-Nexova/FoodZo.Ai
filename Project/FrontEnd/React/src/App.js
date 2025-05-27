@@ -6,8 +6,6 @@ import ForgetPassword from './Components/ForgetPassword/ForgetPassword.jsx';
 import OtpVerification from './Components/OtpVerification/OtpVerification.jsx';
 import ChangePassword from './Components/ChangePassword/ChangePassword.jsx';
 import Dashboard from './Components/Dashboard/Dashboard.jsx';
-import Permissions from './Components/Permissions/Permissions.jsx'
-import RolePermissionsPage from './Components/Role_Permission/Role_Permission.jsx';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 
 function App(){
@@ -21,8 +19,6 @@ function App(){
         <Route path="/verify-otp" element={<OtpVerification />} />
         <Route path="/change-password" element={<ChangePassword />} /> 
         <Route path="/dashboard" element={<Dashboard />} />
-         <Route path="/permissions" element={<Permissions />} />
-        <Route path="/role_permission" element={<RolePermissionsPage/>}/>
       </Routes>
       </BrowserRouter>
     </div>
