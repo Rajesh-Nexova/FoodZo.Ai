@@ -137,7 +137,21 @@ namespace FoodZOAI.UserManagement.Configuration
             services.AddValidatorsFromAssemblyContaining<OrganizationValidator>();
             services.AddValidatorsFromAssemblyContaining<SendEmailValidator>();
             services.AddValidatorsFromAssemblyContaining<RoleValidator>();
-            
+            services.AddValidatorsFromAssemblyContaining<DailyReminderValidator>();
+            services.AddValidatorsFromAssemblyContaining<HalfYearlyReminderValidator>();
+            services.AddValidatorsFromAssemblyContaining<MonthlyReminderValidator>();
+            services.AddValidatorsFromAssemblyContaining<OneTimeReminderValidator>();
+            services.AddValidatorsFromAssemblyContaining<QuarterlyReminderValidator>();
+            services.AddValidatorsFromAssemblyContaining<WeeklyReminderValidator>();
+            services.AddValidatorsFromAssemblyContaining<YearlyReminderValidator>();
+
+
+
+
+
+
+
+
 
 
             return services;
