@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using FluentValidation;
 using FoodZOAI.UserManagement.DTOs;
+using FluentValidation.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<FoodZoaiContext>(options =>
@@ -80,8 +81,13 @@ builder.Services.AddConfigServices();
 builder.Services.AddRepositoryServices();
 //Dependency Injection for FileStorage
 builder.Services.AddFileStorage(builder.Configuration);
-
+//Dependency Injection for Validators
 builder.Services.AddValidators();
+
+// Add controllers and FluentValidation integration 
+builder.Services.AddControllers()
+    .AddFluentValidation();
+
 
 
 // Add CORS policy
@@ -104,11 +110,11 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 
 
 
-builder.Services.AddScoped<FoodZOAI.UserManagement.Contracts.IEmailSettingRepository, FoodZOAI.UserManagement.Repository.EmailSettingRepository>();
-builder.Services.AddScoped<FoodZOAI.UserManagement.Contracts.IEmailTemplateRepository, FoodZOAI.UserManagement.Repository.EmailTemplateRepository>();
+//builder.Services.AddScoped<FoodZOAI.UserManagement.Contracts.IEmailSettingRepository, FoodZOAI.UserManagement.Repository.EmailSettingRepository>();
+//builder.Services.AddScoped<FoodZOAI.UserManagement.Contracts.IEmailTemplateRepository, FoodZOAI.UserManagement.Repository.EmailTemplateRepository>();
 
-builder.Services.AddScoped<FoodZOAI.UserManagement.Services.Contract.IEmailSMTPSettingService, FoodZOAI.UserManagement.Services.Implementation.EmailSMTPSettingService>();
-builder.Services.AddScoped<FoodZOAI.UserManagement.Services.Contract.IEmailTemplateService, FoodZOAI.UserManagement.Services.Implementation.EmailTemplateService>();
+//builder.Services.AddScoped<FoodZOAI.UserManagement.Services.Contract.IEmailSMTPSettingService, FoodZOAI.UserManagement.Services.Implementation.EmailSMTPSettingService>();
+//builder.Services.AddScoped<FoodZOAI.UserManagement.Services.Contract.IEmailTemplateService, FoodZOAI.UserManagement.Services.Implementation.EmailTemplateService>();
 
 var app = builder.Build();
 
@@ -121,7 +127,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+//app.UseAuthorization();
 
 app.MapControllers();
 

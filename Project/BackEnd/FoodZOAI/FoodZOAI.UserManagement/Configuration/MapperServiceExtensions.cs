@@ -49,27 +49,12 @@ namespace FoodZOAI.UserManagement.Configuration
             services.AddScoped<IOneTimeReminderMapper, OneTimeReminderMapper>();
 
 
-
-
             services.AddScoped<IPermissionMapper, PermissionMapper>();
 
             services.AddScoped<IOrganizationMapper, OrganizationMapper>();
 
-
-
-
             return services;
         }
-
-
-
-
-
-
-
-
-
-
 
 
         public static IServiceCollection AddRepositoryServices(this IServiceCollection services)
@@ -92,8 +77,6 @@ namespace FoodZOAI.UserManagement.Configuration
             services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<IPermissionRepository, PermissionRepository>();
             services.AddScoped<IAppsettingRepository, AppsettingRepository>();
-
-
 
             services.AddScoped<IAppsettingRepository, AppsettingRepository>();
 
@@ -149,7 +132,12 @@ namespace FoodZOAI.UserManagement.Configuration
 
         public static IServiceCollection AddValidators(this IServiceCollection services)
         {
-            services.AddScoped<IValidator<RoleDTO>, RoleValidator>();
+            services.AddValidatorsFromAssemblyContaining<EmailSettingValidator>();
+            services.AddValidatorsFromAssemblyContaining<EmailTemplateValidator>();
+            services.AddValidatorsFromAssemblyContaining<OrganizationValidator>();
+            services.AddValidatorsFromAssemblyContaining<SendEmailValidator>();
+            services.AddValidatorsFromAssemblyContaining<RoleValidator>();
+            
 
 
             return services;

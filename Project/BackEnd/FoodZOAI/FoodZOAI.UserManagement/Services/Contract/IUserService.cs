@@ -9,8 +9,8 @@ public interface IUserService
     Task<UserDTO> UpdateUserAsync(int id, UserDTO userDto);
     Task<bool> DeleteUserAsync(int id);
     Task<UserDTO?> LoginAsync(UserLoginRequestDTO loginDto);
-    Task<bool> ChangePasswordAsync(ChangePasswordRequest request);
-    Task<bool> ResetPasswordAsync(ResetPasswordRequest request);
+    Task<bool> ChangePasswordAsync(ChangePasswordRequestDTO request);
+    Task<bool> ResetPasswordAsync(ResetPasswordRequestDTO request);
     Task<UserProfileDTO> UpdateUserProfileAsync(int userId, UserProfileDTO profileDto);
     Task<string?> UpdateUserProfilePhotoAsync(int userId, IFormFile photo);
     Task<UserDTO?> GetProfileAsync(int userId);
