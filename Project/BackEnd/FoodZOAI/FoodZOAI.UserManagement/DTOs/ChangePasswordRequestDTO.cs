@@ -1,6 +1,6 @@
 ﻿namespace FoodZOAI.UserManagement.DTOs
 {
-    public class ChangePasswordRequest
+    public class ChangePasswordRequestDTO
     {
         public int UserId { get; set; }
         public string CurrentPassword { get; set; }

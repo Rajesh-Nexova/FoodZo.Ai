@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using FluentValidation;
 using FoodZOAI.UserManagement.DTOs;
+using FluentValidation.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<FoodZoaiContext>(options =>
@@ -80,8 +81,13 @@ builder.Services.AddConfigServices();
 builder.Services.AddRepositoryServices();
 //Dependency Injection for FileStorage
 builder.Services.AddFileStorage(builder.Configuration);
-
+//Dependency Injection for Validators
 builder.Services.AddValidators();
+
+// Add controllers and FluentValidation integration 
+builder.Services.AddControllers()
+    .AddFluentValidation();
+
 
 
 // Add CORS policy
