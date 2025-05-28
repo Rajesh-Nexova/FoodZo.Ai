@@ -27,7 +27,7 @@ public partial class FoodZoaiContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
-
+    public virtual DbSet<EmailSetting> EmailSettings { get; set; }
     public virtual DbSet<EmailTemplate> EmailTemplates { get; set; }
 
     public virtual DbSet<UserPermission> UserPermissions { get; set; }
@@ -42,7 +42,24 @@ public partial class FoodZoaiContext : DbContext
     public virtual DbSet<UserRole> UserRoles { get; set; }
 
     public virtual DbSet<UserSession> UserSessions { get; set; }
-    
+
+    public DbSet<DailyReminder> DailyReminders { get; set; } = null!;
+
+    public DbSet<WeeklyReminder> WeeklyReminders { get; set; }
+
+    public DbSet<MonthlyReminder> MonthlyReminders { get; set; }
+
+    public virtual DbSet<QuarterlyReminder> QuarterlyReminders { get; set; }
+
+    public virtual DbSet<HalfYearlyReminder> HalfYearlyReminders { get; set; }
+
+    public DbSet<YearlyReminder> YearlyReminders { get; set; } = null!;
+
+    public DbSet<OneTimeReminder> OneTimeReminders { get; set; }
+
+
+
+
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -152,6 +169,10 @@ public partial class FoodZoaiContext : DbContext
                 .HasMaxLength(500)
                 .IsUnicode(false)
                 .HasColumnName("logo_url");
+            entity.Property(e => e.Banner_Image)
+               .HasMaxLength(500)
+               .IsUnicode(false)
+               .HasColumnName("banner_image");
             entity.Property(e => e.MaxUsers)
                 .HasDefaultValue(10)
                 .HasColumnName("max_users");

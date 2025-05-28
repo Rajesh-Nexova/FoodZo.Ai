@@ -4,7 +4,7 @@ namespace FoodZOAI.UserManagement.Contracts
 {
     public interface IAppsettingRepository
     {
-        Task<IEnumerable<Appsetting>> GetAllAsync();
+        Task<List<Appsetting>> GetAllAsync();
         Task<Appsetting?> GetByIdAsync(int id);
         Task<Appsetting?> GetByKeyAsync(string key);
         Task<Appsetting> AddAsync(Appsetting setting);

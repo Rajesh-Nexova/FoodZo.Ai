@@ -1,6 +1,7 @@
 ﻿using FoodZOAI.UserManagement.Configuration.Contracts;
 using FoodZOAI.UserManagement.Contracts;
 using FoodZOAI.UserManagement.DTOs;
+using FoodZOAI.UserManagement.Services.Contract;
 namespace FoodZOAI.UserManagement.Services
 {
     public class PermissionService : IPermissionService

@@ -40,4 +40,5 @@ public partial class UserProfile
     public DateTime? UpdatedAt { get; set; }
 
     public virtual User User { get; set; } = null!;
+    public string PhotoUrl { get; internal set; }
 }
