@@ -84,7 +84,7 @@ namespace FoodZOAI.UserManagement.Configuration
             services.AddScoped<IWeeklyReminderRepository, WeeklyReminderRepository>();
             services.AddScoped<IYearlyReminderRepository, YearlyReminderRepository>();
             services.AddScoped<IOneTimeReminderRepository, OneTimeReminderRepository>();
-            return services;
+            
             services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<IPermissionRepository, PermissionRepository>();
             services.AddScoped<IAppsettingRepository, AppsettingRepository>();
@@ -104,6 +104,7 @@ namespace FoodZOAI.UserManagement.Configuration
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IFileService, FileService>();
+            services.AddScoped<IPermissionService, PermissionService>();
 
             services.AddScoped<IEmailSMTPSettingService, EmailSMTPSettingService>();
             services.AddScoped<IEmailTemplateService, EmailTemplateService>();
@@ -136,8 +137,8 @@ namespace FoodZOAI.UserManagement.Configuration
 				var factory = provider.GetRequiredService<IFileStorageFactory>();
 				return factory.CreateStorageService();
 			});
-            services.AddScoped<IPermissionService, PermissionService>();
-          services.AddScoped<IPermissionService, PermissionService>();
+           
+          
             return services;
 		}
 
