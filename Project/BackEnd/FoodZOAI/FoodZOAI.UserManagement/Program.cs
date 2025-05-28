@@ -110,11 +110,11 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 
 
 
-builder.Services.AddScoped<FoodZOAI.UserManagement.Contracts.IEmailSettingRepository, FoodZOAI.UserManagement.Repository.EmailSettingRepository>();
-builder.Services.AddScoped<FoodZOAI.UserManagement.Contracts.IEmailTemplateRepository, FoodZOAI.UserManagement.Repository.EmailTemplateRepository>();
+//builder.Services.AddScoped<FoodZOAI.UserManagement.Contracts.IEmailSettingRepository, FoodZOAI.UserManagement.Repository.EmailSettingRepository>();
+//builder.Services.AddScoped<FoodZOAI.UserManagement.Contracts.IEmailTemplateRepository, FoodZOAI.UserManagement.Repository.EmailTemplateRepository>();
 
-builder.Services.AddScoped<FoodZOAI.UserManagement.Services.Contract.IEmailSMTPSettingService, FoodZOAI.UserManagement.Services.Implementation.EmailSMTPSettingService>();
-builder.Services.AddScoped<FoodZOAI.UserManagement.Services.Contract.IEmailTemplateService, FoodZOAI.UserManagement.Services.Implementation.EmailTemplateService>();
+//builder.Services.AddScoped<FoodZOAI.UserManagement.Services.Contract.IEmailSMTPSettingService, FoodZOAI.UserManagement.Services.Implementation.EmailSMTPSettingService>();
+//builder.Services.AddScoped<FoodZOAI.UserManagement.Services.Contract.IEmailTemplateService, FoodZOAI.UserManagement.Services.Implementation.EmailTemplateService>();
 
 var app = builder.Build();
 
@@ -127,7 +127,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+//app.UseAuthorization();
 
 app.MapControllers();
 
