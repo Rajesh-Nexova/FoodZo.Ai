@@ -1,8 +1,10 @@
-﻿using FoodZOAI.FileSystem.Core.Contract;
+﻿using FluentValidation;
+using FoodZOAI.FileSystem.Core.Contract;
 using FoodZOAI.FileSystem.Models.Config;
 using FoodZOAI.UserManagement.Configuration.Contracts;
 using FoodZOAI.UserManagement.Configuration.Mappers;
 using FoodZOAI.UserManagement.Contracts;
+using FoodZOAI.UserManagement.DTOs;
 using FoodZOAI.UserManagement.FileFactory;
 using FoodZOAI.UserManagement.Mappers.Implementations;
 using FoodZOAI.UserManagement.Mappers.Interfaces;
@@ -17,19 +19,21 @@ using FoodZOAI.UserManagement.Services.Contracts;
 using FoodZOAI.UserManagement.Services.Implementation;
 using FoodZOAI.UserManagement.Services.Implementations;
 using FoodZOAI.UserManagement.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
+using FoodZOAI.UserManagement.Validators;
 
 namespace FoodZOAI.UserManagement.Configuration
 {
-	public static class MapperServiceExtensions
-	{
-		/// <summary>
-		/// Dependency injection configuration for add mappers
-		/// </summary>
-		/// <param name="services"></param>
-		/// <returns></returns>
-		public static IServiceCollection AddMappers(this IServiceCollection services)
-		{
-			services.AddScoped<IAppsettingMapper, AppsettingMapper>();
+    public static class MapperServiceExtensions
+    {
+        /// <summary>
+        /// Dependency injection configuration for add mappers
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddMappers(this IServiceCollection services)
+        {
+            services.AddScoped<IAppsettingMapper, AppsettingMapper>();
             services.AddScoped<IUserProfileMapper, UserProfileMapper>();
             services.AddScoped<IUserMapper, UserMapper>();
             services.AddScoped<IPermissionMapper, PermissionMapper>();
@@ -55,7 +59,7 @@ namespace FoodZOAI.UserManagement.Configuration
 
 
             return services;
-		}
+        }
 
 
 
@@ -68,8 +72,8 @@ namespace FoodZOAI.UserManagement.Configuration
 
 
 
-		public static IServiceCollection AddRepositoryServices(this IServiceCollection services)
-		{
+        public static IServiceCollection AddRepositoryServices(this IServiceCollection services)
+        {
             services.AddScoped<IPermissionRepository, PermissionRepository>();
             services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<IUserProfileRepository, UserProfileRepository>();
@@ -84,23 +88,23 @@ namespace FoodZOAI.UserManagement.Configuration
             services.AddScoped<IWeeklyReminderRepository, WeeklyReminderRepository>();
             services.AddScoped<IYearlyReminderRepository, YearlyReminderRepository>();
             services.AddScoped<IOneTimeReminderRepository, OneTimeReminderRepository>();
-            
+
             services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<IPermissionRepository, PermissionRepository>();
             services.AddScoped<IAppsettingRepository, AppsettingRepository>();
 
-			
 
-			services.AddScoped<IAppsettingRepository, AppsettingRepository>();
+
+            services.AddScoped<IAppsettingRepository, AppsettingRepository>();
 
             services.AddScoped<IEmailSettingRepository, EmailSettingRepository>();
             services.AddScoped<IEmailTemplateRepository, EmailTemplateRepository>();
             services.AddScoped<IOrganizationRepository, OrganizationRepository>();
             return services;
-		}
-		public static IServiceCollection AddConfigServices(this IServiceCollection services)
-		{
-			services.AddScoped<IAppsettingsService, AppsettingsService>();
+        }
+        public static IServiceCollection AddConfigServices(this IServiceCollection services)
+        {
+            services.AddScoped<IAppsettingsService, AppsettingsService>();
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IFileService, FileService>();
@@ -121,27 +125,38 @@ namespace FoodZOAI.UserManagement.Configuration
 
 
             return services;
-		}
+        }
 
-		public static IServiceCollection AddFileStorage(this IServiceCollection services, IConfiguration configuration)
-		{
-			// Bind configuration
-			var storageConfig = new StorageConfiguration();
-			configuration.GetSection("Storage").Bind(storageConfig);
-			services.AddSingleton(storageConfig);
+        public static IServiceCollection AddFileStorage(this IServiceCollection services, IConfiguration configuration)
+        {
+            // Bind configuration
+            var storageConfig = new StorageConfiguration();
+            configuration.GetSection("Storage").Bind(storageConfig);
+            services.AddSingleton(storageConfig);
 
-			// Register factory and service
-			services.AddSingleton<IFileStorageFactory, FileStorageFactory>();
-			services.AddScoped<IFileStorageService>(provider =>
-			{
-				var factory = provider.GetRequiredService<IFileStorageFactory>();
-				return factory.CreateStorageService();
-			});
-           
-          
+            // Register factory and service
+            services.AddSingleton<IFileStorageFactory, FileStorageFactory>();
+            services.AddScoped<IFileStorageService>(provider =>
+            {
+                var factory = provider.GetRequiredService<IFileStorageFactory>();
+                return factory.CreateStorageService();
+            });
+
+
             return services;
-		}
+        }
 
-	}
+
+        public static IServiceCollection AddValidators(this IServiceCollection services)
+        {
+            services.AddScoped<IValidator<RoleDTO>, RoleValidator>();
+
+
+            return services;
+        }
+
+
+
+    }
 }
 

@@ -4,57 +4,35 @@ using FoodZOAI.UserManagement.Models;
 
 public class PermissionMapper : IPermissionMapper
 {
-    public RoleDTO Map(Role source)
-    {
-        throw new NotImplementedException();
-    }
-
     public PermissionDTO Map(Permission source)
     {
-        throw new NotImplementedException();
-    }
-
-    public List<RoleDTO> MapList(List<Role> source)
-    {
-        throw new NotImplementedException();
+        if (source == null) return null!;
+        return new PermissionDTO
+        {
+            Id = source.Id,
+            Name = source.Name,
+            Description = source.Description
+        };
     }
 
     public List<PermissionDTO> MapList(List<Permission> source)
     {
-        throw new NotImplementedException();
+        return source?.Select(Map).ToList() ?? new List<PermissionDTO>();
     }
 
-    public PermissionDTO ToDTO(Permission model)
+    public Permission MapToDomain(PermissionDTO dto)
     {
-        return new PermissionDTO
-        {
-            Id = model.Id,
-            Name = model.Name,
-            Slug = model.Slug,
-            Description = model.Description,
-            Module = model.Module,
-            Action = model.Action,
-            Resource = model.Resource,
-            IsSystemPermission = model.IsSystemPermission,
-            CreatedAt = model.CreatedAt,
-            UpdatedAt = model.UpdatedAt
-        };
-    }
-
-    public Permission ToEntity(PermissionDTO dto)
-    {
+        if (dto == null) return null!;
         return new Permission
         {
             Id = dto.Id,
             Name = dto.Name,
-            Slug = dto.Slug,
-            Description = dto.Description,
-            Module = dto.Module,
-            Action = dto.Action,
-            Resource = dto.Resource,
-            IsSystemPermission = dto.IsSystemPermission,
-            CreatedAt = dto.CreatedAt,
-            UpdatedAt = dto.UpdatedAt
+            Description = dto.Description
         };
+    }
+
+    public List<Permission> ListMapToDomain(List<PermissionDTO> dtoList)
+    {
+        return dtoList?.Select(MapToDomain).ToList() ?? new List<Permission>();
     }
 }

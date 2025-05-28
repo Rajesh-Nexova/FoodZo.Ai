@@ -5,7 +5,7 @@ namespace FoodZOAI.UserManagement.Configuration.Contracts
 {
     public interface IPermissionMapper : IMapperServices<Permission, PermissionDTO>
     {
-        PermissionDTO ToDTO(Permission model);
-        Permission ToEntity(PermissionDTO dto);
+        Permission MapToDomain(PermissionDTO dto);
+        List<Permission> ListMapToDomain(List<PermissionDTO> dtoList);
     }
 }

@@ -11,7 +11,8 @@ using FoodZOAI.UserManagement.Services.Contracts;
 using FoodZOAI.UserManagement.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
-
+using FluentValidation;
+using FoodZOAI.UserManagement.DTOs;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<FoodZoaiContext>(options =>
@@ -80,6 +81,7 @@ builder.Services.AddRepositoryServices();
 //Dependency Injection for FileStorage
 builder.Services.AddFileStorage(builder.Configuration);
 
+builder.Services.AddValidators();
 
 
 // Add CORS policy
