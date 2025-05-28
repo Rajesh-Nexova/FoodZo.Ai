@@ -12,5 +12,11 @@
         public bool IsRepeated { get; set; }
         public bool IsEmailNotification { get; set; }
         public bool IsActive { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? ModifiedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
+        public string? CreatedByUser { get; set; }
+        public string? ModifiedByUser { get; set; }
+        public string? DeletedByUser { get; set; }
     }
 }

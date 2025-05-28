@@ -27,7 +27,6 @@
     <Compile Remove="DTOs\ReminderSchedulerDTO.cs" />
     <Compile Remove="DTOs\ReminderUserDTO.cs" />
     <Compile Remove="DTOs\UserNotificationDTO.cs" />
-    <Compile Remove="DTOs\UserSessionDTO.cs" />
     <Compile Remove="Services\DashboardUserService.cs" />
     <Compile Remove="Services\EmailService.cs" />
     <Compile Remove="Services\IDashboardUserService.cs" />
