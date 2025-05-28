@@ -73,12 +73,12 @@ public class UserService : IUserService
         return user == null ? null : _userMapper.Map(user);
     }
 
-    public async Task<bool> ChangePasswordAsync(ChangePasswordRequest request)
+    public async Task<bool> ChangePasswordAsync(ChangePasswordRequestDTO request)
     {
         return await _userRepository.ChangePasswordAsync(request.UserId, request.CurrentPassword, request.NewPassword);
     }
 
-    public async Task<bool> ResetPasswordAsync(ResetPasswordRequest request)
+    public async Task<bool> ResetPasswordAsync(ResetPasswordRequestDTO request)
     {
         return await _userRepository.ResetPasswordAsync(request.UserId, request.NewPassword);
     }

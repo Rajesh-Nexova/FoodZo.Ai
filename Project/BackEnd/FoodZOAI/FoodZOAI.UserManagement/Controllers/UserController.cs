@@ -59,7 +59,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("change-password")]
-    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequestDTO request)
     {
         var success = await _userService.ChangePasswordAsync(request);
         return Ok(success);
