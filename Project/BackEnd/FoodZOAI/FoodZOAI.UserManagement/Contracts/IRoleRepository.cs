@@ -2,10 +2,12 @@
 
 namespace FoodZOAI.UserManagement.Contracts
 {
-    public class IRoleRepository
+    public interface IRoleRepository
     {
-       
-
-
+        Task<Role> AddRoleAsync(Role role);
+        Task<List<Role>> GetAllAsync();
+        Task<Role?> GetByIdAsync(int id);
+        Task<bool> DeleteAsync(int id);
+        Task<Role> UpdateAsync(Role role);
     }
 }

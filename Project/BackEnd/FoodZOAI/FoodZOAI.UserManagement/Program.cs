@@ -14,8 +14,8 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//builder.Services.AddDbContext<FoodZoaiContext>(options =>
-//    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<FoodZoaiContext>(options =>
+	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 // Database Configuration
 builder.Services.AddDbContext<FoodZoaiContext>(options =>
 {
@@ -81,19 +81,6 @@ builder.Services.AddRepositoryServices();
 builder.Services.AddFileStorage(builder.Configuration);
 
 
-builder.Services.AddScoped<IDailyReminderRepository, DailyReminderRepository>();
-builder.Services.AddScoped<IDailyReminderService, DailyReminderService>();
-builder.Services.AddScoped<IDailyReminderMapper, DailyReminderMapper>();
-
-builder.Services.AddScoped<IWeeklyReminderRepository, WeeklyReminderRepository>();
-builder.Services.AddScoped<IWeeklyReminderService, WeeklyReminderService>();
-builder.Services.AddScoped<IWeeklyReminderMapper, WeeklyReminderMapper>();
-
-builder.Services.AddScoped<IMonthlyReminderRepository, MonthlyReminderRepository>();
-builder.Services.AddScoped<IMonthlyReminderService, MonthlyReminderService>();
-builder.Services.AddScoped<IMonthlyReminderMapper, MonthlyReminderMapper>();
-
-
 
 // Add CORS policy
 builder.Services.AddCors(options =>
@@ -114,10 +101,14 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 });
 
 
+
+builder.Services.AddScoped<FoodZOAI.UserManagement.Contracts.IEmailSettingRepository, FoodZOAI.UserManagement.Repository.EmailSettingRepository>();
+builder.Services.AddScoped<FoodZOAI.UserManagement.Contracts.IEmailTemplateRepository, FoodZOAI.UserManagement.Repository.EmailTemplateRepository>();
+
+builder.Services.AddScoped<FoodZOAI.UserManagement.Services.Contract.IEmailSMTPSettingService, FoodZOAI.UserManagement.Services.Implementation.EmailSMTPSettingService>();
+builder.Services.AddScoped<FoodZOAI.UserManagement.Services.Contract.IEmailTemplateService, FoodZOAI.UserManagement.Services.Implementation.EmailTemplateService>();
+
 var app = builder.Build();
-
-
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

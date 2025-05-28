@@ -4,9 +4,19 @@ using FoodZOAI.UserManagement.Configuration.Contracts;
 using FoodZOAI.UserManagement.Configuration.Mappers;
 using FoodZOAI.UserManagement.Contracts;
 using FoodZOAI.UserManagement.FileFactory;
+using FoodZOAI.UserManagement.Mappers.Implementations;
+using FoodZOAI.UserManagement.Mappers.Interfaces;
+using FoodZOAI.UserManagement.Repositories;
+using FoodZOAI.UserManagement.Repositories.Contracts;
+using FoodZOAI.UserManagement.Repositories.Implementations;
+using FoodZOAI.UserManagement.Repositories.Interfaces;
 using FoodZOAI.UserManagement.Repository;
+using FoodZOAI.UserManagement.Services;
 using FoodZOAI.UserManagement.Services.Contract;
+using FoodZOAI.UserManagement.Services.Contracts;
 using FoodZOAI.UserManagement.Services.Implementation;
+using FoodZOAI.UserManagement.Services.Implementations;
+using FoodZOAI.UserManagement.Services.Interfaces;
 
 namespace FoodZOAI.UserManagement.Configuration
 {
@@ -20,12 +30,25 @@ namespace FoodZOAI.UserManagement.Configuration
 		public static IServiceCollection AddMappers(this IServiceCollection services)
 		{
 			services.AddScoped<IAppsettingMapper, AppsettingMapper>();
-
             services.AddScoped<IUserProfileMapper, UserProfileMapper>();
             services.AddScoped<IUserMapper, UserMapper>();
-
+            services.AddScoped<IPermissionMapper, PermissionMapper>();
             services.AddScoped<IEmailSettingMapper, EmailSettingMapper>();
             services.AddScoped<IEmailTemplateMapper, EmailTemplateMapper>();
+
+            services.AddScoped<IDailyReminderMapper, DailyReminderMapper>();
+            services.AddScoped<IHalfYearlyReminderMapper, HalfYearlyReminderMapper>();
+            services.AddScoped<IMonthlyReminderMapper, MonthlyReminderMapper>();
+            services.AddScoped<IQuarterlyReminderMapper, QuarterlyReminderMapper>();
+            services.AddScoped<IWeeklyReminderMapper, WeeklyReminderMapper>();
+            services.AddScoped<IYearlyReminderMapper, YearlyReminderMapper>();
+            services.AddScoped<IOneTimeReminderMapper, OneTimeReminderMapper>();
+
+
+
+
+            services.AddScoped<IPermissionMapper, PermissionMapper>();
+
             services.AddScoped<IOrganizationMapper, OrganizationMapper>();
 
 
@@ -34,14 +57,42 @@ namespace FoodZOAI.UserManagement.Configuration
             return services;
 		}
 
+
+
+
+
+
+
+
+
+
+
+
 		public static IServiceCollection AddRepositoryServices(this IServiceCollection services)
 		{
+            services.AddScoped<IPermissionRepository, PermissionRepository>();
+            services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<IUserProfileRepository, UserProfileRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IAppsettingRepository, AppsettingRepository>();
+
+
+            services.AddScoped<IDailyReminderRepository, DailyReminderRepository>();
+            services.AddScoped<IHalfYearlyReminderRepository, HalfYearlyReminderRepository>();
+            services.AddScoped<IMonthlyReminderRepository, MonthlyReminderRepository>();
+            services.AddScoped<IQuarterlyReminderRepository, QuarterlyReminderRepository>();
+            services.AddScoped<IWeeklyReminderRepository, WeeklyReminderRepository>();
+            services.AddScoped<IYearlyReminderRepository, YearlyReminderRepository>();
+            services.AddScoped<IOneTimeReminderRepository, OneTimeReminderRepository>();
+            return services;
+            services.AddScoped<IRoleRepository, RoleRepository>();
+            services.AddScoped<IPermissionRepository, PermissionRepository>();
+            services.AddScoped<IAppsettingRepository, AppsettingRepository>();
+
 			
 
 			services.AddScoped<IAppsettingRepository, AppsettingRepository>();
+
             services.AddScoped<IEmailSettingRepository, EmailSettingRepository>();
             services.AddScoped<IEmailTemplateRepository, EmailTemplateRepository>();
             services.AddScoped<IOrganizationRepository, OrganizationRepository>();
@@ -56,6 +107,17 @@ namespace FoodZOAI.UserManagement.Configuration
 
             services.AddScoped<IEmailSMTPSettingService, EmailSMTPSettingService>();
             services.AddScoped<IEmailTemplateService, EmailTemplateService>();
+
+
+            services.AddScoped<IDailyReminderService, DailyReminderService>();
+            services.AddScoped<IHalfYearlyReminderService, HalfYearlyReminderService>();
+            services.AddScoped<IMonthlyReminderService, MonthlyReminderService>();
+            services.AddScoped<IQuarterlyReminderService, QuarterlyReminderService>();
+            services.AddScoped<IWeeklyReminderService, WeeklyReminderService>();
+            services.AddScoped<IYearlyReminderService, YearlyReminderService>();
+            services.AddScoped<IOneTimeReminderService, OneTimeReminderService>();
+
+
 
             return services;
 		}
@@ -74,9 +136,11 @@ namespace FoodZOAI.UserManagement.Configuration
 				var factory = provider.GetRequiredService<IFileStorageFactory>();
 				return factory.CreateStorageService();
 			});
-
-			return services;
+            services.AddScoped<IPermissionService, PermissionService>();
+          services.AddScoped<IPermissionService, PermissionService>();
+            return services;
 		}
 
 	}
 }
+
