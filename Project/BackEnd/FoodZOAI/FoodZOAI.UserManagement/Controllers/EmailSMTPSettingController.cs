@@ -9,13 +9,21 @@ namespace FoodZOAI.UserManagement.Controllers
     [Route("api/[controller]")]
     [ApiController]
 
+    
+   /*serilog
+    
+    id must be int
+   validator
+    */
+
     public class EmailSMTPSettingController : ControllerBase
     {
         private readonly IEmailSMTPSettingService _emailSMTPSettingService;
         private readonly ILogger<EmailSMTPSettingController> _logger;
 
 
-        public EmailSMTPSettingController(IEmailSMTPSettingService emailSMTPSettingService, ILogger<EmailSMTPSettingController> logger)
+        public EmailSMTPSettingController(IEmailSMTPSettingService emailSMTPSettingService,
+            ILogger<EmailSMTPSettingController> logger)
         {
             _emailSMTPSettingService = emailSMTPSettingService;
             _logger = logger;
@@ -44,6 +52,7 @@ namespace FoodZOAI.UserManagement.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
 
         [HttpGet("GetEmailSMTPSetting/{id}")]
         public async Task<ActionResult<EmailSettingDTO>> GetByIdAsync(int id)

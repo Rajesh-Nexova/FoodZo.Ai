@@ -12,7 +12,8 @@ namespace FoodZOAI.UserManagement.Services.Implementation
         private readonly IEmailSettingMapper _emailSettingMapper;
         private readonly ILogger<EmailSMTPSettingService> _logger;
 
-        public EmailSMTPSettingService(IEmailSettingRepository emailSettingRepository, IEmailSettingMapper emailSettingMapper, ILogger<EmailSMTPSettingService> logger)
+        public EmailSMTPSettingService(IEmailSettingRepository emailSettingRepository,
+            IEmailSettingMapper emailSettingMapper, ILogger<EmailSMTPSettingService> logger)
         {
             _emailSettingRepository = emailSettingRepository;
             _emailSettingMapper = emailSettingMapper;
